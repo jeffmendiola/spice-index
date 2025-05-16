@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Blend } from '../types';
+import { data as spicesData } from '../mocks/data/spices';
 
 interface BlendsSectionProps {
   blends: Blend[];
@@ -10,6 +11,18 @@ interface BlendsSectionProps {
 }
 
 export function BlendsSection({ blends, searchString, isLoading, error }: BlendsSectionProps) {
+  const spices = spicesData();
+
+  const getBlendColors = (blend: Blend) => {
+    const colors = blend.spices.map(spiceId => {
+      const spice = spices.find(s => s.id === spiceId);
+      return spice ? spice.color : null;
+    }).filter(Boolean);
+
+    if (colors.length === 0) return ['gray'];
+    return colors;
+  };
+
   if (error) {
     return (
       <div className="bg-white rounded-xl shadow-sm p-6">
@@ -51,7 +64,15 @@ export function BlendsSection({ blends, searchString, isLoading, error }: Blends
               to={`/blends/${blend.id}`}
               className="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200 hover:border-indigo-500"
             >
-              <span className="text-gray-800 font-medium">{blend.name}</span>
+              <div className="flex items-center">
+                <div 
+                  className="w-4 h-4 rounded mr-2 border border-gray-200 overflow-hidden" 
+                  style={{ 
+                    background: `linear-gradient(to right, ${getBlendColors(blend).map(color => `#${color}`).join(', ')})`
+                  }}
+                />
+                <span className="text-gray-800 font-medium">{blend.name}</span>
+              </div>
             </Link>
           ))}
         </div>

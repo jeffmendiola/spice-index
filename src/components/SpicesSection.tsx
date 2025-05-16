@@ -51,7 +51,13 @@ export function SpicesSection({ spices, searchString, isLoading, error }: Spices
               to={`/spices/${spice.id}`}
               className="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200 hover:border-indigo-500"
             >
-              <span className="text-gray-800 font-medium">{spice.name}</span>
+              <div className="flex items-center">
+                <div 
+                  className="w-4 h-4 rounded mr-2 border border-gray-200" 
+                  style={{ backgroundColor: `#${spice.color}` }}
+                />
+                <span className="text-gray-800 font-medium">{spice.name}</span>
+              </div>
             </Link>
           ))}
         </div>
