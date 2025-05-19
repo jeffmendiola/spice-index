@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useSpiceContext } from '../context/SpiceContext';
 import type { Blend } from '../types';
 import { useState } from 'react';
+import { getBlendColors, formatColorsForGradient } from '../utils/colors';
 
 const BlendDetail = () => {
   const { id } = useParams();
@@ -40,17 +41,6 @@ const BlendDetail = () => {
     return [...new Set([...directSpices, ...childBlendSpices])];
   };
 
-  const getBlendColorsGradient = (blend: Blend) => {
-    const colors = blend.spices
-      .map((spiceId) => {
-        const spice = getSpice(spiceId);
-        return spice ? spice.color : null;
-      })
-      .filter(Boolean);
-    if (colors.length === 0) return ['gray'];
-    return colors;
-  };
-
   const allSpices = getAllSpices(blend);
   const displayedSpices = showAllSpices ? allSpices : allSpices.slice(0, 5);
   const displayedBlends = showAllBlends
@@ -76,17 +66,15 @@ const BlendDetail = () => {
                 <div
                   className="w-4 h-4 rounded border border-gray-300 mr-2"
                   style={{
-                    background: `linear-gradient(to right, ${getBlendColorsGradient(
-                      blend,
-                    )
-                      .map((color) => `#${color}`)
-                      .join(', ')})`,
+                    background: `linear-gradient(to right, ${formatColorsForGradient(
+                      getBlendColors(blend, spices, blends),
+                    )})`,
                   }}
                 />
                 <span className="text-gray-700">
-                  {getBlendColorsGradient(blend)
-                    .map((color) => `#${color}`)
-                    .join(', ')}
+                  {formatColorsForGradient(
+                    getBlendColors(blend, spices, blends),
+                  )}
                 </span>
               </div>
             </div>
@@ -116,11 +104,13 @@ const BlendDetail = () => {
                           <div
                             className="w-4 h-4 rounded mr-2 border border-gray-200 overflow-hidden"
                             style={{
-                              background: `linear-gradient(to right, ${getBlendColorsGradient(
-                                childBlend || blend,
-                              )
-                                .map((color) => `#${color}`)
-                                .join(', ')})`,
+                              background: `linear-gradient(to right, ${formatColorsForGradient(
+                                getBlendColors(
+                                  childBlend || blend,
+                                  spices,
+                                  blends,
+                                ),
+                              )})`,
                             }}
                           />
                           <span>
