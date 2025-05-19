@@ -5,6 +5,7 @@ import './main.css';
 import Home from './home/index.tsx';
 import SpiceDetail from './spice-detail/index.tsx';
 import BlendDetail from './blend-detail/index.tsx';
+import { SpiceProvider } from './context/SpiceContext';
 
 async function enableMocking() {
   const { worker } = await import('./mocks/browser');
@@ -38,7 +39,9 @@ const router = createBrowserRouter(
 enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <RouterProvider router={router} future={{ v7_startTransition: true }} />
+      <SpiceProvider>
+        <RouterProvider router={router} future={{ v7_startTransition: true }} />
+      </SpiceProvider>
     </StrictMode>,
   );
 });
