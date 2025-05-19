@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import type { Spice } from '../types';
+import type { Spice } from '../../types';
 
 interface SpicesSectionProps {
   spices: Spice[];

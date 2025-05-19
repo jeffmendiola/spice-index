@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import type { Blend } from '../types';
-import { data as spicesData } from '../mocks/data/spices';
+import type { Blend } from '../../types';
+import { data as spicesData } from '../../mocks/data/spices';
 
 interface BlendsSectionProps {
   blends: Blend[];

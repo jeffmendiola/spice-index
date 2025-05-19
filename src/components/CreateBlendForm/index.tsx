@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useSpiceContext } from '../context/SpiceContext';
-import { validateBlendForm } from '../utils/validation';
-import { VALIDATION } from '../utils/constants';
+import { useSpiceContext } from '../../context/SpiceContext';
+import { validateBlendForm } from '../../utils/validation';
+import { VALIDATION } from '../../utils/constants';
 
 interface CreateBlendFormProps {
   onSuccess?: () => void;
