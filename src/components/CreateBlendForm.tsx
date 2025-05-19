@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useSpiceContext } from '../context/SpiceContext';
+import { validateBlendForm } from '../utils/validation';
+import { VALIDATION } from '../utils/constants';
 
 interface CreateBlendFormProps {
   onSuccess?: () => void;
@@ -17,6 +19,11 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
     description: false,
     spices: false,
   });
+  const [errors, setErrors] = useState({
+    name: '',
+    description: '',
+    spices: '',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,11 +34,14 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
       spices: true,
     });
 
-    const isNameValid = name.trim() !== '';
-    const isDescriptionValid = description.trim() !== '';
-    const isSpicesValid = selectedSpices.length >= 2;
+    const { isValid, errors: validationErrors } = validateBlendForm({
+      name,
+      description,
+      spices: selectedSpices,
+    });
+    setErrors(validationErrors);
 
-    if (!isNameValid || !isDescriptionValid || !isSpicesValid) {
+    if (!isValid) {
       return;
     }
 
@@ -50,6 +60,7 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
       setDescription('');
       setSelectedSpices([]);
       setSelectedBlends([]);
+      setErrors({ name: '', description: '', spices: '' });
       onSuccess?.();
     } catch (err) {
       console.error('Failed to create blend:', err);
@@ -91,13 +102,13 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
           onChange={(e) => setName(e.target.value)}
           onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
           className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 px-3 py-2 ${
-            touched.name && !name.trim()
+            touched.name && errors.name
               ? 'border-red-300 focus:border-red-500'
               : 'border-gray-300 focus:border-indigo-500'
           }`}
         />
-        {touched.name && !name.trim() && (
-          <p className="mt-1 text-sm text-red-600">Blend name is required</p>
+        {touched.name && errors.name && (
+          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
         )}
       </div>
 
@@ -115,13 +126,13 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
           onBlur={() => setTouched((prev) => ({ ...prev, description: true }))}
           rows={3}
           className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 px-3 py-2 ${
-            touched.description && !description.trim()
+            touched.description && errors.description
               ? 'border-red-300 focus:border-red-500'
               : 'border-gray-300 focus:border-indigo-500'
           }`}
         />
-        {touched.description && !description.trim() && (
-          <p className="mt-1 text-sm text-red-600">Description is required</p>
+        {touched.description && errors.description && (
+          <p className="mt-1 text-sm text-red-600">{errors.description}</p>
         )}
       </div>
 
@@ -129,7 +140,7 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Select Spices <span className="text-gray-700">*</span>
           <span className="text-sm text-gray-500 ml-2">
-            (Select at least 2)
+            (Select at least {VALIDATION.MIN_SPICES})
           </span>
         </label>
         <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-md border-gray-300">
@@ -148,10 +159,8 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
             </label>
           ))}
         </div>
-        {touched.spices && selectedSpices.length < 2 && (
-          <p className="mt-1 text-sm text-red-600">
-            Please select at least 2 spices
-          </p>
+        {touched.spices && errors.spices && (
+          <p className="mt-1 text-sm text-red-600">{errors.spices}</p>
         )}
       </div>
 
