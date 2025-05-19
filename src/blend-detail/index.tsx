@@ -71,13 +71,8 @@ const BlendDetail = () => {
           ← Back
         </button>
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-2xl font-bold mb-6">Blend Details</h2>
+          <h2 className="text-2xl font-bold mb-6">{blend.name}</h2>
           <div className="space-y-4">
-            {/* Name */}
-            <div className="bg-gray-100 rounded p-4">
-              <div className="font-semibold text-gray-700 mb-1">Name</div>
-              <div className="font-medium">{blend.name}</div>
-            </div>
             {/* Color */}
             <div className="bg-gray-100 rounded p-4">
               <div className="font-semibold text-gray-700 mb-1">Color</div>
