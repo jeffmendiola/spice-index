@@ -17,16 +17,28 @@ export function BlendsSection({
 }: BlendsSectionProps) {
   const spices = spicesData();
 
-  const getBlendColors = (blend: Blend) => {
-    const colors = blend.spices
+  const getBlendColors = (blend: Blend): string[] => {
+    const spiceColors = blend.spices
       .map((spiceId) => {
         const spice = spices.find((s) => s.id === spiceId);
-        return spice ? spice.color : null;
+        return spice?.color ?? null;
       })
-      .filter(Boolean);
+      .filter((color): color is string => color !== null);
 
-    if (colors.length === 0) return ['gray'];
-    return colors;
+    if (spiceColors.length > 0) return spiceColors;
+
+    const blendColors = blend.blends
+      .map((blendId) => {
+        const childBlend = blends.find((b) => b.id === blendId);
+        if (!childBlend) return null;
+        return getBlendColors(childBlend);
+      })
+      .filter((colors): colors is string[] => colors !== null)
+      .flat();
+
+    if (blendColors.length > 0) return blendColors;
+
+    return ['7e7ac'];
   };
 
   if (error) {

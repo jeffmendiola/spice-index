@@ -18,8 +18,18 @@ export const handlers = [
   http.get('/api/v1/blends', () => {
     return HttpResponse.json(mockBlends());
   }),
-  http.post('/api/v1/blends', () => {
-    return HttpResponse.json({ success: true });
+  http.post('/api/v1/blends', async ({ request }) => {
+    const newBlend = (await request.json()) as {
+      name: string;
+      description: string;
+      spices: number[];
+      blends: number[];
+    };
+    const createdBlend = {
+      ...newBlend,
+      id: Math.floor(Math.random() * 1000),
+    };
+    return HttpResponse.json(createdBlend);
   }),
   http.get('/api/v1/blends/:id', ({ params }) => {
     const blend = mockBlends().find((blend) => blend.id === Number(params.id));

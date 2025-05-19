@@ -22,7 +22,6 @@ const SpiceDetail = () => {
     return <div className="text-gray-600">Spice not found</div>;
   }
 
-  // Helper for price display
   const getPriceLevel = (price: string) => (price ? price.length : 0);
 
   return (

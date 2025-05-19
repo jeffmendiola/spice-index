@@ -6,6 +6,8 @@ import {
   ReactNode,
 } from 'react';
 import type { Spice, Blend } from '../types';
+import { STORAGE_KEYS } from '../utils/constants';
+import { data as defaultBlends } from '../mocks/data/blends';
 
 interface SpiceContextType {
   spices: Spice[];
@@ -18,18 +20,38 @@ interface SpiceContextType {
     spices: string | null;
     blends: string | null;
   };
+  addBlend: (blend: Omit<Blend, 'id'>) => Promise<void>;
+  clearLocalStorage: () => void;
 }
 
 const SpiceContext = createContext<SpiceContextType | undefined>(undefined);
 
 export function SpiceProvider({ children }: { children: ReactNode }) {
   const [spices, setSpices] = useState<Spice[]>([]);
-  const [blends, setBlends] = useState<Blend[]>([]);
+  const [blends, setBlends] = useState<Blend[]>(() => {
+    // Initialize blends from localStorage if available
+    try {
+      const savedBlends = localStorage.getItem(STORAGE_KEYS.BLENDS);
+      return savedBlends ? JSON.parse(savedBlends) : defaultBlends();
+    } catch (error) {
+      console.error('Error loading blends from localStorage:', error);
+      return defaultBlends();
+    }
+  });
   const [isLoading, setIsLoading] = useState({ spices: true, blends: true });
   const [errors, setErrors] = useState({
     spices: null as string | null,
     blends: null as string | null,
   });
+
+  // Save blends to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.BLENDS, JSON.stringify(blends));
+    } catch (error) {
+      console.error('Error saving blends to localStorage:', error);
+    }
+  }, [blends]);
 
   useEffect(() => {
     async function fetchData() {
@@ -61,7 +83,16 @@ export function SpiceProvider({ children }: { children: ReactNode }) {
           throw new Error(`HTTP error! status: ${blendsResponse.status}`);
         }
         const blendsData = await blendsResponse.json();
-        setBlends(blendsData);
+        // Merge API blends with localStorage blends
+        const localBlends = JSON.parse(
+          localStorage.getItem(STORAGE_KEYS.BLENDS) || '[]',
+        );
+        const mergedBlends = [...blendsData, ...localBlends];
+        // Remove duplicates based on id
+        const uniqueBlends = Array.from(
+          new Map(mergedBlends.map((blend) => [blend.id, blend])).values(),
+        );
+        setBlends(uniqueBlends);
         setErrors((prev) => ({ ...prev, blends: null }));
       } catch (error) {
         setErrors((prev) => ({
@@ -78,8 +109,49 @@ export function SpiceProvider({ children }: { children: ReactNode }) {
     fetchBlends();
   }, []);
 
+  const addBlend = async (newBlend: Omit<Blend, 'id'>) => {
+    try {
+      const response = await fetch('/api/v1/blends', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newBlend),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const createdBlend = await response.json();
+      setBlends((prev) => [...prev, createdBlend]);
+    } catch (error) {
+      throw error instanceof Error
+        ? error
+        : new Error('Failed to create blend');
+    }
+  };
+
+  const clearLocalStorage = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEYS.BLENDS);
+      setBlends(defaultBlends());
+    } catch (error) {
+      console.error('Error clearing localStorage:', error);
+    }
+  };
+
   return (
-    <SpiceContext.Provider value={{ spices, blends, isLoading, errors }}>
+    <SpiceContext.Provider
+      value={{
+        spices,
+        blends,
+        isLoading,
+        errors,
+        addBlend,
+        clearLocalStorage,
+      }}
+    >
       {children}
     </SpiceContext.Provider>
   );

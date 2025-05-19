@@ -26,10 +26,8 @@ const BlendDetail = () => {
     return <div className="text-gray-600">Blend not found</div>;
   }
 
-  // Helper to get spice object
   const getSpice = (spiceId: number) => spices.find((s) => s.id === spiceId);
 
-  // Helper to get blend object
   const getBlend = (blendId: number) => blends.find((b) => b.id === blendId);
 
   // Helper to recursively get all spices from a blend and its child blends
@@ -42,8 +40,7 @@ const BlendDetail = () => {
     return [...new Set([...directSpices, ...childBlendSpices])];
   };
 
-  // Helper for blend color gradient
-  const getBlendColors = (blend: Blend) => {
+  const getBlendColorsGradient = (blend: Blend) => {
     const colors = blend.spices
       .map((spiceId) => {
         const spice = getSpice(spiceId);
@@ -54,7 +51,6 @@ const BlendDetail = () => {
     return colors;
   };
 
-  // Get all spices including those from child blends
   const allSpices = getAllSpices(blend);
   const displayedSpices = showAllSpices ? allSpices : allSpices.slice(0, 5);
   const displayedBlends = showAllBlends
@@ -80,7 +76,7 @@ const BlendDetail = () => {
                 <div
                   className="w-4 h-4 rounded border border-gray-300 mr-2"
                   style={{
-                    background: `linear-gradient(to right, ${getBlendColors(
+                    background: `linear-gradient(to right, ${getBlendColorsGradient(
                       blend,
                     )
                       .map((color) => `#${color}`)
@@ -88,7 +84,7 @@ const BlendDetail = () => {
                   }}
                 />
                 <span className="text-gray-700">
-                  {getBlendColors(blend)
+                  {getBlendColorsGradient(blend)
                     .map((color) => `#${color}`)
                     .join(', ')}
                 </span>
@@ -120,7 +116,7 @@ const BlendDetail = () => {
                           <div
                             className="w-4 h-4 rounded mr-2 border border-gray-200 overflow-hidden"
                             style={{
-                              background: `linear-gradient(to right, ${getBlendColors(
+                              background: `linear-gradient(to right, ${getBlendColorsGradient(
                                 childBlend || blend,
                               )
                                 .map((color) => `#${color}`)

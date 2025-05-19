@@ -5,6 +5,7 @@ import './main.css';
 import Home from './home/index.tsx';
 import SpiceDetail from './spice-detail/index.tsx';
 import BlendDetail from './blend-detail/index.tsx';
+import { CreateBlend } from './create-blend';
 import { SpiceProvider } from './context/SpiceContext';
 
 async function enableMocking() {
@@ -27,6 +28,10 @@ const router = createBrowserRouter(
     {
       path: '/blends/:id',
       element: <BlendDetail />,
+    },
+    {
+      path: '/blends/create',
+      element: <CreateBlend />,
     },
   ],
   {
