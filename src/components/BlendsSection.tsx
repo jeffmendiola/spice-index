@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Blend } from '../types';
 import { data as spicesData } from '../mocks/data/spices';

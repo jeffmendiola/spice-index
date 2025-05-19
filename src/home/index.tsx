@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Blend, Spice } from '../types';
 import { SearchBar } from '../components/SearchBar';
 import { SpicesSection } from '../components/SpicesSection';
