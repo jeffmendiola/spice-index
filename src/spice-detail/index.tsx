@@ -1,8 +1,9 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSpiceContext } from '../context/SpiceContext';
 
 const SpiceDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { spices, isLoading, errors } = useSpiceContext();
 
   const spice = spices.find((s) => s.id === Number(id));
@@ -27,12 +28,12 @@ const SpiceDetail = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
-        <Link
-          to="/"
+        <button
+          onClick={() => navigate(-1)}
           className="text-indigo-600 hover:text-indigo-900 mb-4 block"
         >
-          ← Back to Spice Collection
-        </Link>
+          ← Back
+        </button>
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h2 className="text-2xl font-bold mb-6">Spice Details</h2>
           <div className="space-y-4">
@@ -46,7 +47,7 @@ const SpiceDetail = () => {
               <div className="font-semibold text-gray-700 mb-1">Color</div>
               <div className="flex items-center">
                 <div
-                  className="w-5 h-5 rounded border border-gray-300 mr-2"
+                  className="w-4 h-4 rounded border border-gray-300 mr-2"
                   style={{ backgroundColor: `#${spice.color}` }}
                 />
                 <span className="text-gray-700">#{spice.color}</span>
