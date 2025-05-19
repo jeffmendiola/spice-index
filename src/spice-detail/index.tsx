@@ -20,7 +20,9 @@ const SpiceDetail = () => {
         setSpice(spiceData);
         setError(null);
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to fetch spice');
+        setError(
+          error instanceof Error ? error.message : 'Failed to fetch spice',
+        );
       } finally {
         setIsLoading(false);
       }
@@ -37,14 +39,19 @@ const SpiceDetail = () => {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <Link to="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
+          <Link
+            to="/"
+            className="text-indigo-600 hover:text-indigo-800 font-medium"
+          >
             ← Back to Spice Collection
           </Link>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Spice Details</h2>
-          
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Spice Details
+          </h2>
+
           {error && (
             <div className="text-red-600">Error loading spice: {error}</div>
           )}
@@ -59,17 +66,21 @@ const SpiceDetail = () => {
             <div className="grid gap-4">
               <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <span className="text-gray-600">Name</span>
-                <div className="text-gray-800 font-medium mt-1">{spice.name}</div>
+                <div className="text-gray-800 font-medium mt-1">
+                  {spice.name}
+                </div>
               </div>
 
               <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <span className="text-gray-600">Color</span>
                 <div className="flex items-center mt-1">
-                  <div 
-                    className="w-6 h-6 rounded mr-2 border border-gray-200" 
+                  <div
+                    className="w-6 h-6 rounded mr-2 border border-gray-200"
                     style={{ backgroundColor: `#${spice.color}` }}
                   />
-                  <span className="text-gray-800 font-medium">#{spice.color}</span>
+                  <span className="text-gray-800 font-medium">
+                    #{spice.color}
+                  </span>
                 </div>
               </div>
 
@@ -101,9 +112,7 @@ const SpiceDetail = () => {
                     <div
                       key={index}
                       className={`text-xl mr-1 flex items-center justify-center ${
-                        index < spice.heat
-                          ? 'opacity-100'
-                          : 'opacity-25'
+                        index < spice.heat ? 'opacity-100' : 'opacity-25'
                       }`}
                     >
                       🔥

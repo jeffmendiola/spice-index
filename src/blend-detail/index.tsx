@@ -25,7 +25,9 @@ const BlendDetail = () => {
         setBlend(blendData);
         setError(null);
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to fetch blend');
+        setError(
+          error instanceof Error ? error.message : 'Failed to fetch blend',
+        );
       } finally {
         setIsLoading(false);
       }
@@ -35,22 +37,24 @@ const BlendDetail = () => {
   }, [id]);
 
   const getSpiceName = (spiceId: number) => {
-    const spice = spices.find(s => s.id === spiceId);
+    const spice = spices.find((s) => s.id === spiceId);
     return spice ? spice.name : 'Unknown Spice';
   };
 
   const getBlendName = (blendId: number) => {
-    const foundBlend = blends.find(b => b.id === blendId);
+    const foundBlend = blends.find((b) => b.id === blendId);
     return foundBlend ? foundBlend.name : `Unknown Blend (${blendId})`;
   };
 
   const getBlendColors = (blend: Blend | undefined) => {
     if (!blend) return ['gray'];
-    
-    const colors = blend.spices.map(spiceId => {
-      const spice = spices.find(s => s.id === spiceId);
-      return spice ? spice.color : null;
-    }).filter(Boolean);
+
+    const colors = blend.spices
+      .map((spiceId) => {
+        const spice = spices.find((s) => s.id === spiceId);
+        return spice ? spice.color : null;
+      })
+      .filter(Boolean);
 
     if (colors.length === 0) return ['gray'];
     return colors;
@@ -60,14 +64,19 @@ const BlendDetail = () => {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <Link to="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
+          <Link
+            to="/"
+            className="text-indigo-600 hover:text-indigo-800 font-medium"
+          >
             ← Back to Spice Collection
           </Link>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Blend Details</h2>
-          
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Blend Details
+          </h2>
+
           {error && (
             <div className="text-red-600">Error loading blend: {error}</div>
           )}
@@ -83,13 +92,19 @@ const BlendDetail = () => {
               <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <span className="text-gray-600">Name</span>
                 <div className="flex items-center mt-1">
-                  <div 
-                    className="w-4 h-4 rounded mr-2 border border-gray-200 overflow-hidden" 
-                    style={{ 
-                      background: `linear-gradient(to right, ${getBlendColors(blend).map(color => `#${color}`).join(', ')})`
+                  <div
+                    className="w-4 h-4 rounded mr-2 border border-gray-200 overflow-hidden"
+                    style={{
+                      background: `linear-gradient(to right, ${getBlendColors(
+                        blend,
+                      )
+                        .map((color) => `#${color}`)
+                        .join(', ')})`,
                     }}
                   />
-                  <span className="text-gray-800 font-medium">{blend.name}</span>
+                  <span className="text-gray-800 font-medium">
+                    {blend.name}
+                  </span>
                 </div>
               </div>
 
@@ -107,13 +122,18 @@ const BlendDetail = () => {
                       to={`/spices/${spiceId}`}
                       className="flex items-center p-2 bg-white rounded border border-gray-200 hover:border-indigo-500 transition-colors"
                     >
-                      <div 
-                        className="w-3 h-3 rounded-full mr-2 border border-gray-200" 
-                        style={{ 
-                          backgroundColor: `#${spices.find(s => s.id === spiceId)?.color || 'gray'}`
+                      <div
+                        className="w-3 h-3 rounded-full mr-2 border border-gray-200"
+                        style={{
+                          backgroundColor: `#${
+                            spices.find((s) => s.id === spiceId)?.color ||
+                            'gray'
+                          }`,
                         }}
                       />
-                      <span className="text-gray-800">{getSpiceName(spiceId)}</span>
+                      <span className="text-gray-800">
+                        {getSpiceName(spiceId)}
+                      </span>
                     </Link>
                   ))}
                 </div>
@@ -129,13 +149,19 @@ const BlendDetail = () => {
                         to={`/blends/${blendId}`}
                         className="flex items-center p-2 bg-white rounded border border-gray-200 hover:border-indigo-500 transition-colors"
                       >
-                        <div 
-                          className="w-4 h-4 rounded mr-2 border border-gray-200 overflow-hidden" 
-                          style={{ 
-                            background: `linear-gradient(to right, ${getBlendColors(blends.find(b => b.id === blendId)).map(color => `#${color}`).join(', ')})`
+                        <div
+                          className="w-4 h-4 rounded mr-2 border border-gray-200 overflow-hidden"
+                          style={{
+                            background: `linear-gradient(to right, ${getBlendColors(
+                              blends.find((b) => b.id === blendId),
+                            )
+                              .map((color) => `#${color}`)
+                              .join(', ')})`,
                           }}
                         />
-                        <span className="text-gray-800">{getBlendName(blendId)}</span>
+                        <span className="text-gray-800">
+                          {getBlendName(blendId)}
+                        </span>
                       </Link>
                     ))}
                   </div>

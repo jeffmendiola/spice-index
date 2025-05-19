@@ -9,7 +9,12 @@ interface SpicesSectionProps {
   error: string | null;
 }
 
-export function SpicesSection({ spices, searchString, isLoading, error }: SpicesSectionProps) {
+export function SpicesSection({
+  spices,
+  searchString,
+  isLoading,
+  error,
+}: SpicesSectionProps) {
   if (error) {
     return (
       <div className="bg-white rounded-xl shadow-sm p-6">
@@ -31,7 +36,7 @@ export function SpicesSection({ spices, searchString, isLoading, error }: Spices
   }
 
   const filteredSpices = spices.filter((spice) =>
-    spice.name.toLowerCase().includes(searchString.toLowerCase())
+    spice.name.toLowerCase().includes(searchString.toLowerCase()),
   );
 
   return (
@@ -52,8 +57,8 @@ export function SpicesSection({ spices, searchString, isLoading, error }: Spices
               className="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200 hover:border-indigo-500"
             >
               <div className="flex items-center">
-                <div 
-                  className="w-4 h-4 rounded mr-2 border border-gray-200" 
+                <div
+                  className="w-4 h-4 rounded mr-2 border border-gray-200"
                   style={{ backgroundColor: `#${spice.color}` }}
                 />
                 <span className="text-gray-800 font-medium">{spice.name}</span>
@@ -64,4 +69,4 @@ export function SpicesSection({ spices, searchString, isLoading, error }: Spices
       )}
     </div>
   );
-} 
+}

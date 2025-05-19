@@ -5,7 +5,10 @@ interface SearchBarProps {
   updateSearchString: (value: string) => void;
 }
 
-export function SearchBar({ searchString, updateSearchString }: SearchBarProps) {
+export function SearchBar({
+  searchString,
+  updateSearchString,
+}: SearchBarProps) {
   return (
     <div className="mb-8 flex justify-center">
       <div className="relative w-full max-w-md">
@@ -31,6 +34,6 @@ export function SearchBar({ searchString, updateSearchString }: SearchBarProps) 
           />
         </svg>
       </div>
-    </div>   
+    </div>
   );
-} 
+}
