@@ -15,7 +15,5 @@ export interface Blend {
 }
 
 export interface BlendWithSpices extends Blend {
-  spiceDetails: Spice[];
-  childBlends: Omit<BlendWithSpices, 'spiceDetails'>[];
   allSpices: Spice[];
 }

@@ -52,23 +52,8 @@ export const handlers = [
 
     if (include?.includes('spices')) {
       const allBlends = store.getBlends();
-      const spiceDetails = blend.spices
-        .map((spiceId) => mockSpices().find((s) => s.id === spiceId))
-        .filter((spice): spice is Spice => spice !== undefined);
-
-      const childBlends = blend.blends
-        .map((blendId) => allBlends.find((b) => b.id === blendId))
-        .filter((b): b is Blend => b !== undefined)
-        .map((childBlend) => ({
-          ...childBlend,
-          childBlends: [],
-          allSpices: getAllSpices(childBlend, allBlends),
-        }));
-
       const enhancedBlend: BlendWithSpices = {
         ...blend,
-        spiceDetails,
-        childBlends,
         allSpices: getAllSpices(blend, allBlends),
       };
 
