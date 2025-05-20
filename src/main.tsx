@@ -8,7 +8,6 @@ import Home from './home/index.tsx';
 import SpiceDetail from './spice-detail/index.tsx';
 import BlendDetail from './blend-detail/index.tsx';
 import { CreateBlend } from './create-blend';
-import { data as defaultBlends } from './mocks/data/blends';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,9 +17,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-// Set initial data for blends
-queryClient.setQueryData(['blends'], defaultBlends());
 
 async function enableMocking() {
   const { worker } = await import('./mocks/browser');
