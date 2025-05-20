@@ -38,7 +38,7 @@ export function BlendsSection({
 
     if (blendColors.length > 0) return blendColors;
 
-    return ['7e7ac'];
+    return ['7e7ac0'];
   };
 
   if (error) {
