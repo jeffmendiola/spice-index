@@ -1,48 +1,42 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useSpiceContext } from '../context/SpiceContext';
-import type { Blend } from '../types';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useBlend } from '../hooks/useBlend';
+import { useBlends } from '../hooks/useBlend';
+import type { Spice, Blend, BlendWithSpices } from '../types';
 import { useState } from 'react';
 import { getBlendColors, formatColorsForGradient } from '../utils/colors';
 
 const BlendDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { spices, blends, isLoading, errors } = useSpiceContext();
   const [showAllSpices, setShowAllSpices] = useState(false);
   const [showAllBlends, setShowAllBlends] = useState(false);
 
-  const blend = blends.find((b) => b.id === Number(id));
+  const {
+    data: blend,
+    isLoading: isLoadingBlend,
+    error: blendError,
+  } = useBlend(Number(id));
+  const { data: blends } = useBlends();
 
-  if (isLoading.blends) {
+  if (isLoadingBlend) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8" />
     );
   }
 
-  if (errors.blends) {
-    return <div className="text-red-600">Error: {errors.blends}</div>;
+  if (blendError) {
+    return <div className="text-red-600">Error: {blendError.message}</div>;
   }
 
-  if (!blend) {
+  if (!blend || !blends) {
     return <div className="text-gray-600">Blend not found</div>;
   }
 
-  const getSpice = (spiceId: number) => spices.find((s) => s.id === spiceId);
-
   const getBlend = (blendId: number) => blends.find((b) => b.id === blendId);
-
-  // Helper to recursively get all spices from a blend and its child blends
-  const getAllSpices = (blend: Blend): number[] => {
-    const directSpices = [...blend.spices];
-    const childBlendSpices = blend.blends.flatMap((blendId) => {
-      const childBlend = getBlend(blendId);
-      return childBlend ? getAllSpices(childBlend) : [];
-    });
-    return [...new Set([...directSpices, ...childBlendSpices])];
-  };
-
-  const allSpices = getAllSpices(blend);
-  const displayedSpices = showAllSpices ? allSpices : allSpices.slice(0, 5);
+  const blendWithSpices = blend as BlendWithSpices;
+  const displayedSpices = showAllSpices
+    ? blendWithSpices.allSpices
+    : blendWithSpices.allSpices.slice(0, 5);
   const displayedBlends = showAllBlends
     ? blend.blends
     : blend.blends.slice(0, 3);
@@ -67,13 +61,13 @@ const BlendDetail = () => {
                   className="w-4 h-4 rounded border border-gray-300 mr-2"
                   style={{
                     background: `linear-gradient(to right, ${formatColorsForGradient(
-                      getBlendColors(blend, spices, blends),
+                      getBlendColors(blend, blendWithSpices.allSpices, blends),
                     )})`,
                   }}
                 />
                 <span className="text-gray-700">
                   {formatColorsForGradient(
-                    getBlendColors(blend, spices, blends),
+                    getBlendColors(blend, blendWithSpices.allSpices, blends),
                   )}
                 </span>
               </div>
@@ -107,7 +101,7 @@ const BlendDetail = () => {
                               background: `linear-gradient(to right, ${formatColorsForGradient(
                                 getBlendColors(
                                   childBlend || blend,
-                                  spices,
+                                  blendWithSpices.allSpices,
                                   blends,
                                 ),
                               )})`,
@@ -136,37 +130,34 @@ const BlendDetail = () => {
             {/* All Included Spices */}
             <div className="bg-gray-100 rounded p-4">
               <div className="font-semibold text-gray-700 mb-1">
-                All Included Spices ({allSpices.length})
+                All Included Spices ({blendWithSpices.allSpices.length})
               </div>
               <div className="space-y-2">
-                {displayedSpices.map((spiceId) => {
-                  const spice = getSpice(spiceId);
-                  return (
-                    <button
-                      key={spiceId}
-                      onClick={() => navigate(`/spices/${spiceId}`)}
-                      className="w-full text-left bg-white rounded px-3 py-2 border border-gray-200 hover:border-indigo-500"
-                    >
-                      <div className="flex items-center">
-                        <span
-                          className="w-4 h-4 rounded border border-gray-300 mr-2"
-                          style={{
-                            backgroundColor: `#${spice?.color || '888'}`,
-                          }}
-                        />
-                        <span>{spice ? spice.name : 'Unknown Spice'}</span>
-                      </div>
-                    </button>
-                  );
-                })}
-                {allSpices.length > 5 && (
+                {displayedSpices.map((spice) => (
+                  <button
+                    key={spice.id}
+                    onClick={() => navigate(`/spices/${spice.id}`)}
+                    className="w-full text-left bg-white rounded px-3 py-2 border border-gray-200 hover:border-indigo-500"
+                  >
+                    <div className="flex items-center">
+                      <span
+                        className="w-4 h-4 rounded border border-gray-300 mr-2"
+                        style={{
+                          backgroundColor: `#${spice.color}`,
+                        }}
+                      />
+                      <span>{spice.name}</span>
+                    </div>
+                  </button>
+                ))}
+                {blendWithSpices.allSpices.length > 5 && (
                   <button
                     onClick={() => setShowAllSpices(!showAllSpices)}
                     className="w-full mt-2 text-indigo-600 hover:text-indigo-900 text-sm font-medium"
                   >
                     {showAllSpices
                       ? 'Show Less'
-                      : `Show ${allSpices.length - 5} More`}
+                      : `Show ${blendWithSpices.allSpices.length - 5} More`}
                   </button>
                 )}
               </div>

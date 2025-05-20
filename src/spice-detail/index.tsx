@@ -1,21 +1,19 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSpiceContext } from '../context/SpiceContext';
+import { useSpice } from '../hooks/useSpice';
 
 const SpiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { spices, isLoading, errors } = useSpiceContext();
+  const { data: spice, isLoading, error } = useSpice(Number(id));
 
-  const spice = spices.find((s) => s.id === Number(id));
-
-  if (isLoading.spices) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8" />
     );
   }
 
-  if (errors.spices) {
-    return <div className="text-red-600">Error: {errors.spices}</div>;
+  if (error) {
+    return <div className="text-red-600">Error: {error.message}</div>;
   }
 
   if (!spice) {

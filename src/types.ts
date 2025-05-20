@@ -13,3 +13,9 @@ export interface Blend {
   name: string;
   spices: number[];
 }
+
+export interface BlendWithSpices extends Blend {
+  spiceDetails: Spice[];
+  childBlends: Omit<BlendWithSpices, 'spiceDetails'>[];
+  allSpices: Spice[];
+}

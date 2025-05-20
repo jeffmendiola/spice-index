@@ -1,19 +1,37 @@
 import { useState } from 'react';
-import { useSpiceContext } from '../../context/SpiceContext';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '../../utils/api';
 import { validateBlendForm } from '../../utils/validation';
 import { VALIDATION } from '../../utils/constants';
+import type { Blend } from '../../types';
 
 interface CreateBlendFormProps {
   onSuccess?: () => void;
 }
 
 export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
-  const { spices, blends, addBlend } = useSpiceContext();
+  const queryClient = useQueryClient();
+  const { data: spices = [] } = useQuery({
+    queryKey: ['spices'],
+    queryFn: api.spices.getAll,
+  });
+  const { data: blends = [] } = useQuery({
+    queryKey: ['blends'],
+    queryFn: api.blends.getAll,
+  });
+
+  const addBlendMutation = useMutation<Blend, Error, Omit<Blend, 'id'>>({
+    mutationFn: (newBlend) => api.blends.create(newBlend),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blends'] });
+      onSuccess?.();
+    },
+  });
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedSpices, setSelectedSpices] = useState<number[]>([]);
   const [selectedBlends, setSelectedBlends] = useState<number[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [touched, setTouched] = useState({
     name: false,
     description: false,
@@ -45,8 +63,6 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
       const newBlend = {
         name,
@@ -55,17 +71,14 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
         blends: selectedBlends,
       };
 
-      await addBlend(newBlend);
+      await addBlendMutation.mutateAsync(newBlend);
       setName('');
       setDescription('');
       setSelectedSpices([]);
       setSelectedBlends([]);
       setErrors({ name: '', description: '', spices: '' });
-      onSuccess?.();
     } catch (err) {
       console.error('Failed to create blend:', err);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -188,10 +201,10 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={addBlendMutation.isPending}
         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
       >
-        {isSubmitting ? 'Creating...' : 'Create Blend'}
+        {addBlendMutation.isPending ? 'Creating...' : 'Create Blend'}
       </button>
     </form>
   );
