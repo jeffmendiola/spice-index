@@ -134,13 +134,22 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
   } = useBlendForm(onSuccess);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6"
+      aria-label="Create new blend form"
+      noValidate
+    >
       <div>
         <label
           htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
-          Blend Name <span className="text-gray-700">*</span>
+          Blend Name{' '}
+          <span className="text-red-500" aria-hidden="true">
+            *
+          </span>
+          <span className="sr-only">(required)</span>
         </label>
         <input
           type="text"
@@ -153,9 +162,16 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
               ? 'border-red-300 focus:border-red-500'
               : 'border-gray-300 focus:border-indigo-500'
           }`}
+          aria-invalid={touched.name && errors.name ? 'true' : 'false'}
+          aria-describedby={
+            touched.name && errors.name ? 'name-error' : undefined
+          }
+          required
         />
         {touched.name && errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+          <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
+            {errors.name}
+          </p>
         )}
       </div>
 
@@ -164,82 +180,128 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
           htmlFor="description"
           className="block text-sm font-medium text-gray-700"
         >
-          Description <span className="text-gray-700">*</span>
+          Description{' '}
+          <span className="text-red-500" aria-hidden="true">
+            *
+          </span>
+          <span className="sr-only">(required)</span>
         </label>
         <textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           onBlur={() => setTouched((prev) => ({ ...prev, description: true }))}
-          rows={3}
           className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 px-3 py-2 ${
             touched.description && errors.description
               ? 'border-red-300 focus:border-red-500'
               : 'border-gray-300 focus:border-indigo-500'
           }`}
+          aria-invalid={
+            touched.description && errors.description ? 'true' : 'false'
+          }
+          aria-describedby={
+            touched.description && errors.description
+              ? 'description-error'
+              : undefined
+          }
+          required
         />
         {touched.description && errors.description && (
-          <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+          <p
+            id="description-error"
+            className="mt-1 text-sm text-red-600"
+            role="alert"
+          >
+            {errors.description}
+          </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Select Spices <span className="text-gray-700">*</span>
-          <span className="text-sm text-gray-500 ml-2">
-            (Select at least {VALIDATION.MIN_SPICES})
-          </span>
-        </label>
-        <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-md border-gray-300">
-          {spices.map((spice) => (
-            <label
-              key={spice.id}
-              className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+        <fieldset>
+          <legend className="block text-sm font-medium text-gray-700 mb-2">
+            Select Spices{' '}
+            <span className="text-red-500" aria-hidden="true">
+              *
+            </span>
+            <span className="sr-only">(required)</span>
+            <span className="text-sm text-gray-500 ml-2">
+              (Select at least {VALIDATION.MIN_SPICES})
+            </span>
+          </legend>
+          <div
+            className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-md border-gray-300"
+            role="group"
+            aria-describedby={
+              touched.spices && errors.spices ? 'spices-error' : undefined
+            }
+          >
+            {spices.map((spice) => (
+              <label
+                key={spice.id}
+                className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedSpices.includes(spice.id)}
+                  onChange={() => toggleSpice(spice.id)}
+                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  aria-label={`Select ${spice.name}`}
+                />
+                <span className="text-sm text-gray-700">{spice.name}</span>
+              </label>
+            ))}
+          </div>
+          {touched.spices && errors.spices && (
+            <p
+              id="spices-error"
+              className="mt-1 text-sm text-red-600"
+              role="alert"
             >
-              <input
-                type="checkbox"
-                checked={selectedSpices.includes(spice.id)}
-                onChange={() => toggleSpice(spice.id)}
-                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              />
-              <span className="text-sm text-gray-700">{spice.name}</span>
-            </label>
-          ))}
-        </div>
-        {touched.spices && errors.spices && (
-          <p className="mt-1 text-sm text-red-600">{errors.spices}</p>
-        )}
+              {errors.spices}
+            </p>
+          )}
+        </fieldset>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Select Child Blends (Optional)
-        </label>
-        <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-md border-gray-300">
-          {blends.map((blend) => (
-            <label
-              key={blend.id}
-              className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={selectedBlends.includes(blend.id)}
-                onChange={() => toggleBlend(blend.id)}
-                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              />
-              <span className="text-sm text-gray-700">{blend.name}</span>
-            </label>
-          ))}
-        </div>
+        <fieldset>
+          <legend className="block text-sm font-medium text-gray-700 mb-2">
+            Select Child Blends (Optional)
+          </legend>
+          <div
+            className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-md border-gray-300"
+            role="group"
+          >
+            {blends.map((blend) => (
+              <label
+                key={blend.id}
+                className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedBlends.includes(blend.id)}
+                  onChange={() => toggleBlend(blend.id)}
+                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  aria-label={`Select ${blend.name}`}
+                />
+                <span className="text-sm text-gray-700">{blend.name}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
       </div>
 
-      <button
-        type="submit"
-        disabled={addBlendMutation.isPending}
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-      >
-        {addBlendMutation.isPending ? 'Creating...' : 'Create Blend'}
-      </button>
+      <div>
+        <button
+          type="submit"
+          disabled={addBlendMutation.isPending}
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-busy={addBlendMutation.isPending}
+        >
+          {addBlendMutation.isPending ? 'Creating...' : 'Create Blend'}
+        </button>
+      </div>
     </form>
   );
 }

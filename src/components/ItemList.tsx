@@ -20,27 +20,30 @@ export function ItemList<T extends Item>({
   getItemLink,
 }: ItemListProps<T>) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        {title} {items.length > 0 && `(${items.length})`}
+    <section aria-labelledby={`${title.toLowerCase()}-heading`}>
+      <h2
+        id={`${title.toLowerCase()}-heading`}
+        className="text-xl font-semibold mb-4"
+      >
+        {title} ({items.length})
       </h2>
-      {items.length === 0 ? (
-        <div className="text-gray-500 text-center py-8">
-          No {title.toLowerCase()} found matching your search.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2">
-          {items.map((item) => (
+      <ul
+        role="list"
+        className="space-y-2"
+        aria-label={`List of ${title.toLowerCase()}`}
+      >
+        {items.map((item) => (
+          <li key={item.id}>
             <Link
-              key={item.id}
               to={getItemLink(item)}
-              className="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200 hover:border-indigo-500"
+              className="block bg-white rounded px-3 py-2 border border-gray-200 hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              aria-label={`View details for ${item.name}`}
             >
               {renderItem(item)}
             </Link>
-          ))}
-        </div>
-      )}
-    </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
