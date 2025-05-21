@@ -30,19 +30,21 @@ export function SpicesSection({
 
   if (filteredSpices.length === 0) {
     return (
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Spices</h2>
-        <p>No spices found matching your search.</p>
-      </div>
+      <section className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Spices</h2>
+        <p className="text-gray-500 text-center py-8">
+          No spices found matching your search.
+        </p>
+      </section>
     );
   }
 
   if (spices.length === 0) {
     return (
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Spices</h2>
-        <p>No spices available.</p>
-      </div>
+      <section className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Spices</h2>
+        <p className="text-gray-500 text-center py-8">No spices available.</p>
+      </section>
     );
   }
 
