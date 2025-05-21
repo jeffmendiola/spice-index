@@ -4,9 +4,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './main.css';
-import Home from './home/index.tsx';
-import SpiceDetail from './spice-detail/index.tsx';
-import BlendDetail from './blend-detail/index.tsx';
+import Home from './home';
+import SpiceDetail from './spice-detail';
+import BlendDetail from './blend-detail';
 import { CreateBlend } from './create-blend';
 
 const queryClient = new QueryClient({
