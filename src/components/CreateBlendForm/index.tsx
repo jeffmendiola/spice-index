@@ -9,25 +9,8 @@ interface CreateBlendFormProps {
   onSuccess?: () => void;
 }
 
-export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
+const useBlendForm = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
-  const { data: spices = [] } = useQuery({
-    queryKey: ['spices'],
-    queryFn: api.spices.getAll,
-  });
-  const { data: blends = [] } = useQuery({
-    queryKey: ['blends'],
-    queryFn: api.blends.getAll,
-  });
-
-  const addBlendMutation = useMutation<Blend, Error, Omit<Blend, 'id'>>({
-    mutationFn: (newBlend) => api.blends.create(newBlend),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blends'] });
-      onSuccess?.();
-    },
-  });
-
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedSpices, setSelectedSpices] = useState<number[]>([]);
@@ -41,6 +24,14 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
     name: '',
     description: '',
     spices: '',
+  });
+
+  const addBlendMutation = useMutation<Blend, Error, Omit<Blend, 'id'>>({
+    mutationFn: (newBlend) => api.blends.create(newBlend),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blends'] });
+      onSuccess?.();
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,6 +89,49 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
         : [...prev, blendId],
     );
   };
+
+  return {
+    name,
+    setName,
+    description,
+    setDescription,
+    selectedSpices,
+    selectedBlends,
+    touched,
+    errors,
+    handleSubmit,
+    toggleSpice,
+    toggleBlend,
+    setTouched,
+    addBlendMutation,
+  };
+};
+
+export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
+  const { data: spices = [] } = useQuery({
+    queryKey: ['spices'],
+    queryFn: api.spices.getAll,
+  });
+  const { data: blends = [] } = useQuery({
+    queryKey: ['blends'],
+    queryFn: api.blends.getAll,
+  });
+
+  const {
+    name,
+    setName,
+    description,
+    setDescription,
+    selectedSpices,
+    selectedBlends,
+    touched,
+    errors,
+    handleSubmit,
+    toggleSpice,
+    toggleBlend,
+    setTouched,
+    addBlendMutation,
+  } = useBlendForm(onSuccess);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

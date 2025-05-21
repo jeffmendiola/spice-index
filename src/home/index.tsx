@@ -49,18 +49,26 @@ function Home() {
     queryFn: api.blends.getAll,
   });
 
-  const filteredSpices = spices.filter((spice) => {
-    const matchesSearch = spice.name
-      .toLowerCase()
-      .includes(searchString.toLowerCase());
+  const filterItems = <T extends { name: string }>(
+    items: T[],
+    searchString: string,
+    additionalFilters?: (item: T) => boolean,
+  ) => {
+    return items.filter((item) => {
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(searchString.toLowerCase());
+      return matchesSearch && (!additionalFilters || additionalFilters(item));
+    });
+  };
+
+  const filteredSpices = filterItems(spices, searchString, (spice) => {
     const matchesPrice = priceRating === null || spice.price === priceRating;
     const matchesHeat = heatLevel === null || spice.heat === heatLevel;
-    return matchesSearch && matchesPrice && matchesHeat;
+    return matchesPrice && matchesHeat;
   });
 
-  const filteredBlends = blends.filter((blend) => {
-    return blend.name.toLowerCase().includes(searchString.toLowerCase());
-  });
+  const filteredBlends = filterItems(blends, searchString);
 
   const handleResetFilters = () => {
     updateSearchString('');
