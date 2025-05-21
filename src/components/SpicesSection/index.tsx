@@ -28,6 +28,24 @@ export function SpicesSection({
     spice.name.toLowerCase().includes(searchString.toLowerCase()),
   );
 
+  if (filteredSpices.length === 0) {
+    return (
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Spices</h2>
+        <p>No spices found matching your search.</p>
+      </div>
+    );
+  }
+
+  if (spices.length === 0) {
+    return (
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Spices</h2>
+        <p>No spices available.</p>
+      </div>
+    );
+  }
+
   return (
     <ItemList
       items={filteredSpices}
@@ -36,6 +54,7 @@ export function SpicesSection({
       renderItem={(spice) => (
         <div className="flex items-center">
           <div
+            data-testid={`spice-color-${spice.id}`}
             className="w-4 h-4 rounded mr-2 border border-gray-200"
             style={{ backgroundColor: `#${spice.color}` }}
           />

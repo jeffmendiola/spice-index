@@ -4,9 +4,9 @@ import { MemoryRouter } from 'react-router-dom';
 import { SpicesSection } from '.';
 
 const mockSpices = [
-  { id: '1', name: 'Cinnamon', color: 'A0522D' },
-  { id: '2', name: 'Turmeric', color: 'FFA500' },
-  { id: '3', name: 'Paprika', color: 'FF0000' },
+  { id: 1, name: 'Cinnamon', color: 'A0522D', price: '$$', heat: 1 },
+  { id: 2, name: 'Turmeric', color: 'FFA500', price: '$$', heat: 0 },
+  { id: 3, name: 'Paprika', color: 'FF0000', price: '$$', heat: 2 },
 ];
 
 describe('SpicesSection', () => {
@@ -96,5 +96,56 @@ describe('SpicesSection', () => {
     expect(
       screen.getByText('No spices found matching your search.'),
     ).toBeInTheDocument();
+  });
+
+  it('renders color squares for each spice', () => {
+    render(
+      <MemoryRouter>
+        <SpicesSection
+          spices={mockSpices}
+          searchString=""
+          isLoading={false}
+          error={null}
+        />
+      </MemoryRouter>,
+    );
+
+    mockSpices.forEach((spice) => {
+      const colorSquare = screen.getByTestId(`spice-color-${spice.id}`);
+      expect(colorSquare).toHaveStyle({ backgroundColor: `#${spice.color}` });
+    });
+  });
+
+  it('generates correct links for each spice', () => {
+    render(
+      <MemoryRouter>
+        <SpicesSection
+          spices={mockSpices}
+          searchString=""
+          isLoading={false}
+          error={null}
+        />
+      </MemoryRouter>,
+    );
+
+    mockSpices.forEach((spice) => {
+      const link = screen.getByText(spice.name).closest('a');
+      expect(link).toHaveAttribute('href', `/spices/${spice.id}`);
+    });
+  });
+
+  it('shows empty state when no spices are available', () => {
+    render(
+      <MemoryRouter>
+        <SpicesSection
+          spices={[]}
+          searchString=""
+          isLoading={false}
+          error={null}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('No spices available.')).toBeInTheDocument();
   });
 });
