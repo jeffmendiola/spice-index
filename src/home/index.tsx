@@ -1,13 +1,37 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { SearchBar } from '../components/SearchBar';
 import { SpicesSection } from '../components/SpicesSection';
 import { BlendsSection } from '../components/BlendsSection';
+import { FilterControls } from '../components/FilterControls';
 import { api } from '../utils/api';
 
 function Home() {
-  const [searchString, updateSearchString] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchString, updateSearchString] = useState(
+    searchParams.get('search') || '',
+  );
+  const [priceRating, setPriceRating] = useState<string | null>(
+    searchParams.get('price') || null,
+  );
+  const [heatLevel, setHeatLevel] = useState<number | null>(
+    searchParams.get('heat') ? parseInt(searchParams.get('heat')!) : null,
+  );
+
+  const updateUrlParams = () => {
+    const params = new URLSearchParams();
+    if (searchString) params.set('search', searchString);
+    if (priceRating) params.set('price', priceRating);
+    if (heatLevel !== null) params.set('heat', heatLevel.toString());
+    setSearchParams(params);
+  };
+
+  // Update URL when filters change
+  useEffect(() => {
+    updateUrlParams();
+  }, [searchString, priceRating, heatLevel, setSearchParams]);
+
   const {
     data: spices = [],
     isLoading: isLoadingSpices,
@@ -25,6 +49,25 @@ function Home() {
     queryFn: api.blends.getAll,
   });
 
+  const filteredSpices = spices.filter((spice) => {
+    const matchesSearch = spice.name
+      .toLowerCase()
+      .includes(searchString.toLowerCase());
+    const matchesPrice = priceRating === null || spice.price === priceRating;
+    const matchesHeat = heatLevel === null || spice.heat === heatLevel;
+    return matchesSearch && matchesPrice && matchesHeat;
+  });
+
+  const filteredBlends = blends.filter((blend) => {
+    return blend.name.toLowerCase().includes(searchString.toLowerCase());
+  });
+
+  const handleResetFilters = () => {
+    updateSearchString('');
+    setPriceRating(null);
+    setHeatLevel(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -39,21 +82,29 @@ function Home() {
             </Link>
           </div>
         </div>
-        <div className="mb-8">
+        <div className="mb-8 space-y-4">
           <SearchBar
             searchString={searchString}
             updateSearchString={updateSearchString}
           />
+          <FilterControls
+            searchString={searchString}
+            priceRating={priceRating}
+            heatLevel={heatLevel}
+            onReset={handleResetFilters}
+            setPriceRating={setPriceRating}
+            setHeatLevel={setHeatLevel}
+          />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <SpicesSection
-            spices={spices}
+            spices={filteredSpices}
             searchString={searchString}
             isLoading={isLoadingSpices}
             error={spicesError?.message || null}
           />
           <BlendsSection
-            blends={blends}
+            blends={filteredBlends}
             searchString={searchString}
             isLoading={isLoadingBlends}
             error={blendsError?.message || null}
