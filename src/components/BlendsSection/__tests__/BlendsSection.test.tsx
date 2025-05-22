@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { BlendsSection } from '../index';
-import { data as spicesData } from '../../../mocks/data/spices';
 
 // Mock the spices data
 vi.mock('../../../mocks/data/spices', () => ({

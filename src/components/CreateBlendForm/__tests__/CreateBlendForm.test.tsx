@@ -3,7 +3,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CreateBlendForm } from '../index';
 import { api } from '../../../utils/api';
-import { VALIDATION } from '../../../utils/constants';
 
 // Mock the API
 vi.mock('../../../utils/api', () => ({
@@ -57,7 +56,6 @@ describe('CreateBlendForm', () => {
   it('renders form fields correctly', async () => {
     renderWithQueryClient(<CreateBlendForm />);
 
-    // Check for required form elements
     expect(screen.getByLabelText(/blend name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
     expect(screen.getByText(/select spices/i)).toBeInTheDocument();

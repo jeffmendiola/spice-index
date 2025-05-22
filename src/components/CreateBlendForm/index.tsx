@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { validateBlendForm } from '../../utils/validation';
-import { VALIDATION } from '../../utils/constants';
+
 import type { Blend } from '../../types';
 
 interface CreateBlendFormProps {
