@@ -11,7 +11,7 @@ export const useSpice = (id: number) => {
 export const useSpices = () => {
   return useQuery({
     queryKey: ['spices'],
-    queryFn: api.spices.getAll,
+    queryFn: () => api.spices.getAll(),
   });
 };
 

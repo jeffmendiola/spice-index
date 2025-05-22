@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Spice, Blend } from '../types';
+
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../utils/api';
 
