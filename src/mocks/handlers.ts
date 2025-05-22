@@ -25,7 +25,16 @@ const getAllSpices = (blend: Blend, allBlends: Blend[]): Spice[] => {
 };
 
 // In-memory storage for blends
-let blends = [...defaultBlends()];
+let blends = (() => {
+  const storedBlends = localStorage.getItem('mockBlends');
+  return storedBlends ? JSON.parse(storedBlends) : [...defaultBlends()];
+})();
+
+// Helper function to save blends to localStorage
+const saveBlends = (newBlends: Blend[]) => {
+  localStorage.setItem('mockBlends', JSON.stringify(newBlends));
+  blends = newBlends;
+};
 
 export const handlers = [
   http.get('/api/v1/spices', () => {
@@ -58,14 +67,14 @@ export const handlers = [
     const newBlend = (await request.json()) as Omit<Blend, 'id'>;
     const createdBlend = {
       ...newBlend,
-      id: Math.max(...blends.map((b) => b.id)) + 1,
+      id: Math.max(...blends.map((b: Blend) => b.id)) + 1,
     };
-    blends = [...blends, createdBlend];
+    saveBlends([...blends, createdBlend]);
     return HttpResponse.json(createdBlend);
   }),
 
   http.get('/api/v1/blends/:id', ({ params, request }) => {
-    const blend = blends.find((blend) => blend.id === Number(params.id));
+    const blend = blends.find((blend: Blend) => blend.id === Number(params.id));
 
     if (!blend) {
       return new HttpResponse('Not found', { status: 404 });
@@ -87,7 +96,7 @@ export const handlers = [
   }),
 
   http.post('/api/v1/blends/reset', () => {
-    blends = [...defaultBlends()];
+    saveBlends([...defaultBlends()]);
     return new HttpResponse(null, { status: 200 });
   }),
 ];
