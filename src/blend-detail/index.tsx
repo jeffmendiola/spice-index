@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useBlend } from '../hooks/useBlend';
 import { useBlends } from '../hooks/useBlend';
-import type { BlendWithSpices } from '../types';
+import type { BlendWithSpices, Blend } from '../types';
 import { useState } from 'react';
 import { getBlendColors, formatColorsForGradient } from '../utils/colors';
 
@@ -16,7 +16,7 @@ const BlendDetail = () => {
     isLoading: isLoadingBlend,
     error: blendError,
   } = useBlend(Number(id));
-  const { data: blends } = useBlends();
+  const { data: blends = [] } = useBlends();
 
   if (isLoadingBlend) {
     return (
