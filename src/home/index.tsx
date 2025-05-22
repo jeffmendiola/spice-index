@@ -28,7 +28,6 @@ export const Home = () => {
   } = useSpiceFilters();
 
   const {
-    searchString: blendSearchString,
     setSearchString: setBlendSearchString,
     blends: filteredBlends,
     isLoading: isLoadingBlends,
@@ -39,8 +38,10 @@ export const Home = () => {
   useEffect(() => {
     if (spiceSearch) {
       setSpiceSearchString(spiceSearch);
+      setBlendSearchString(spiceSearch);
     }
     if (blendSearch) {
+      setSpiceSearchString(blendSearch);
       setBlendSearchString(blendSearch);
     }
     if (priceRatingParam) {
@@ -66,12 +67,9 @@ export const Home = () => {
       const newParams = new URLSearchParams(searchParams);
       if (spiceSearchString) {
         newParams.set('spiceSearch', spiceSearchString);
+        newParams.set('blendSearch', spiceSearchString);
       } else {
         newParams.delete('spiceSearch');
-      }
-      if (blendSearchString) {
-        newParams.set('blendSearch', blendSearchString);
-      } else {
         newParams.delete('blendSearch');
       }
       if (priceRating !== null) {
@@ -90,7 +88,6 @@ export const Home = () => {
     updateUrlParams();
   }, [
     spiceSearchString,
-    blendSearchString,
     priceRating,
     heatLevel,
     searchParams,
@@ -121,26 +118,41 @@ export const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <SearchBar
-            searchString={spiceSearchString}
-            updateSearchString={setSpiceSearchString}
-          />
-          <SearchBar
-            searchString={blendSearchString}
-            updateSearchString={setBlendSearchString}
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+          <span className="text-lg font-semibold text-gray-800 whitespace-nowrap">
+            Spice Index 🌶️
+          </span>
+          <div className="flex-1 flex justify-center items-center">
+            <SearchBar
+              searchString={spiceSearchString}
+              updateSearchString={(value) => {
+                setSpiceSearchString(value);
+                setBlendSearchString(value);
+              }}
+            />
+          </div>
+          <Link
+            to="/blends/create"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-[140px] justify-center flex-shrink-0"
+          >
+            Create Blend
+          </Link>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <FilterControls
+            priceRating={priceRating}
+            heatLevel={heatLevel}
+            onReset={handleResetFilters}
+            setPriceRating={setPriceRating}
+            setHeatLevel={setHeatLevel}
           />
         </div>
 
-        <FilterControls
-          priceRating={priceRating}
-          heatLevel={heatLevel}
-          onReset={handleResetFilters}
-          setPriceRating={setPriceRating}
-          setHeatLevel={setHeatLevel}
-        />
-
+        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <SpicesSection
             spices={filteredSpices}

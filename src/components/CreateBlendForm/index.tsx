@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { validateBlendForm } from '../../utils/validation';
 
-import type { Blend } from '../../types';
+import type { Blend, Spice } from '../../types';
 
 interface CreateBlendFormProps {
   onSuccess?: () => void;
@@ -109,13 +109,13 @@ const useBlendForm = (onSuccess?: () => void) => {
 };
 
 export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
-  const { data: spices = [] } = useQuery({
+  const { data: spices = [] } = useQuery<Spice[], Error>({
     queryKey: ['spices'],
-    queryFn: api.spices.getAll,
+    queryFn: () => api.spices.getAll(),
   });
-  const { data: blends = [] } = useQuery({
+  const { data: blends = [] } = useQuery<Blend[], Error>({
     queryKey: ['blends'],
-    queryFn: api.blends.getAll,
+    queryFn: () => api.blends.getAll(),
   });
 
   const {
