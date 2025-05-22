@@ -4,8 +4,20 @@ const API_BASE_URL = '/api/v1';
 
 export const api = {
   spices: {
-    getAll: async (): Promise<Spice[]> => {
-      const response = await fetch(`${API_BASE_URL}/spices`);
+    getAll: async (params?: {
+      search?: string;
+      price?: number;
+      heat?: number;
+    }): Promise<Spice[]> => {
+      const queryParams = new URLSearchParams();
+      if (params?.search) queryParams.set('search', params.search);
+      if (params?.price) queryParams.set('price', params.price.toString());
+      if (params?.heat) queryParams.set('heat', params.heat.toString());
+
+      const url = `${API_BASE_URL}/spices${
+        queryParams.toString() ? `?${queryParams.toString()}` : ''
+      }`;
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch spices');
       }
@@ -20,8 +32,14 @@ export const api = {
     },
   },
   blends: {
-    getAll: async (): Promise<Blend[]> => {
-      const response = await fetch(`${API_BASE_URL}/blends`);
+    getAll: async (params?: { search?: string }): Promise<Blend[]> => {
+      const queryParams = new URLSearchParams();
+      if (params?.search) queryParams.set('search', params.search);
+
+      const url = `${API_BASE_URL}/blends${
+        queryParams.toString() ? `?${queryParams.toString()}` : ''
+      }`;
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch blends');
       }

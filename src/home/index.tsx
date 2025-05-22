@@ -1,15 +1,18 @@
 import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { SearchBar } from '../components/SearchBar';
 import { SpicesSection } from '../components/SpicesSection';
 import { BlendsSection } from '../components/BlendsSection';
+import { SearchBar } from '../components/SearchBar';
 import { FilterControls } from '../components/FilterControls';
-import { api } from '../utils/api';
-import { useSpiceFilters, useBlendFilters } from '../hooks/useFilterItems';
+import { useSpiceFilters } from '../hooks/useFilterItems';
+import { useBlendFilters } from '../hooks/useFilterItems';
 
-function Home() {
+export const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const spiceSearch = searchParams.get('spiceSearch') || '';
+  const blendSearch = searchParams.get('blendSearch') || '';
+  const priceRatingParam = searchParams.get('price');
+  const heatLevelParam = searchParams.get('heat');
 
   const {
     searchString: spiceSearchString,
@@ -18,65 +21,86 @@ function Home() {
     setPriceRating,
     heatLevel,
     setHeatLevel,
-    filterSpices,
-    resetFilters: resetSpiceFilters,
+    spices: filteredSpices,
+    isLoading: isLoadingSpices,
+    error: spiceError,
   } = useSpiceFilters();
 
   const {
     searchString: blendSearchString,
     setSearchString: setBlendSearchString,
-    filterBlends,
-    resetFilters: resetBlendFilters,
+    blends: filteredBlends,
+    isLoading: isLoadingBlends,
+    error: blendError,
   } = useBlendFilters();
 
   // Initialize state from URL params
   useEffect(() => {
-    setSpiceSearchString(searchParams.get('search') || '');
-    setBlendSearchString(searchParams.get('search') || '');
-    setPriceRating(
-      searchParams.get('price') ? parseInt(searchParams.get('price')!) : null,
-    );
-    setHeatLevel(
-      searchParams.get('heat') ? parseInt(searchParams.get('heat')!) : null,
-    );
-  }, []);
+    if (spiceSearch) {
+      setSpiceSearchString(spiceSearch);
+    }
+    if (blendSearch) {
+      setBlendSearchString(blendSearch);
+    }
+    if (priceRatingParam) {
+      setPriceRating(parseInt(priceRatingParam));
+    }
+    if (heatLevelParam) {
+      setHeatLevel(parseInt(heatLevelParam));
+    }
+  }, [
+    spiceSearch,
+    blendSearch,
+    priceRatingParam,
+    heatLevelParam,
+    setSpiceSearchString,
+    setBlendSearchString,
+    setPriceRating,
+    setHeatLevel,
+  ]);
 
-  const updateUrlParams = () => {
-    const params = new URLSearchParams();
-    if (spiceSearchString) params.set('search', spiceSearchString);
-    if (priceRating !== null) params.set('price', priceRating.toString());
-    if (heatLevel !== null) params.set('heat', heatLevel.toString());
-    setSearchParams(params);
-  };
-
-  // Update URL when filters change
+  // Update URL params when filters change
   useEffect(() => {
+    const updateUrlParams = () => {
+      const newParams = new URLSearchParams(searchParams);
+      if (spiceSearchString) {
+        newParams.set('spiceSearch', spiceSearchString);
+      } else {
+        newParams.delete('spiceSearch');
+      }
+      if (blendSearchString) {
+        newParams.set('blendSearch', blendSearchString);
+      } else {
+        newParams.delete('blendSearch');
+      }
+      if (priceRating !== null) {
+        newParams.set('price', priceRating.toString());
+      } else {
+        newParams.delete('price');
+      }
+      if (heatLevel !== null) {
+        newParams.set('heat', heatLevel.toString());
+      } else {
+        newParams.delete('heat');
+      }
+      setSearchParams(newParams);
+    };
+
     updateUrlParams();
-  }, [spiceSearchString, priceRating, heatLevel, setSearchParams]);
-
-  const {
-    data: spices = [],
-    isLoading: isLoadingSpices,
-    error: spicesError,
-  } = useQuery({
-    queryKey: ['spices'],
-    queryFn: api.spices.getAll,
-  });
-  const {
-    data: blends = [],
-    isLoading: isLoadingBlends,
-    error: blendsError,
-  } = useQuery({
-    queryKey: ['blends'],
-    queryFn: api.blends.getAll,
-  });
-
-  const filteredSpices = filterSpices(spices);
-  const filteredBlends = filterBlends(blends);
+  }, [
+    spiceSearchString,
+    blendSearchString,
+    priceRating,
+    heatLevel,
+    searchParams,
+    setSearchParams,
+  ]);
 
   const handleResetFilters = () => {
-    resetSpiceFilters();
-    resetBlendFilters();
+    setSpiceSearchString('');
+    setBlendSearchString('');
+    setPriceRating(null);
+    setHeatLevel(null);
   };
 
   return (
@@ -110,7 +134,6 @@ function Home() {
         {/* Filters and content */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
           <FilterControls
-            searchString={spiceSearchString}
             priceRating={priceRating}
             heatLevel={heatLevel}
             onReset={handleResetFilters}
@@ -122,20 +145,18 @@ function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <SpicesSection
             spices={filteredSpices}
-            searchString={spiceSearchString}
             isLoading={isLoadingSpices}
-            error={spicesError?.message || null}
+            error={spiceError?.message || null}
           />
           <BlendsSection
             blends={filteredBlends}
-            searchString={blendSearchString}
             isLoading={isLoadingBlends}
-            error={blendsError?.message || null}
+            error={blendError?.message || null}
           />
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Home;

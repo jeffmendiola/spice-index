@@ -10,7 +10,6 @@ const getHeatPillButton = (count: number) => {
 
 describe('FilterControls', () => {
   const defaultProps = {
-    searchString: '',
     priceRating: null,
     heatLevel: null,
     onReset: vi.fn(),
@@ -32,14 +31,7 @@ describe('FilterControls', () => {
   });
 
   it('shows reset button when filters are active', () => {
-    render(
-      <FilterControls
-        {...defaultProps}
-        searchString="test"
-        priceRating={1}
-        heatLevel={2}
-      />,
-    );
+    render(<FilterControls {...defaultProps} priceRating={1} heatLevel={2} />);
     expect(screen.getByText('Reset Filters')).toBeInTheDocument();
   });
 
@@ -79,14 +71,7 @@ describe('FilterControls', () => {
   });
 
   it('calls onReset when reset button is clicked', () => {
-    render(
-      <FilterControls
-        {...defaultProps}
-        searchString="test"
-        priceRating={1}
-        heatLevel={2}
-      />,
-    );
+    render(<FilterControls {...defaultProps} priceRating={1} heatLevel={2} />);
     const resetButton = screen.getByText('Reset Filters');
     fireEvent.click(resetButton);
     expect(defaultProps.onReset).toHaveBeenCalled();

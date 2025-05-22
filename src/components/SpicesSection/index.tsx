@@ -5,14 +5,12 @@ import { ItemList } from '../ItemList';
 
 interface SpicesSectionProps {
   spices: Spice[];
-  searchString: string;
   isLoading: boolean;
   error: string | null;
 }
 
 export function SpicesSection({
   spices,
-  searchString,
   isLoading,
   error,
 }: SpicesSectionProps) {
@@ -22,21 +20,6 @@ export function SpicesSection({
 
   if (isLoading) {
     return <LoadingState title="Spices" />;
-  }
-
-  const filteredSpices = spices.filter((spice) =>
-    spice.name.toLowerCase().includes(searchString.toLowerCase()),
-  );
-
-  if (filteredSpices.length === 0) {
-    return (
-      <section className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Spices</h2>
-        <p className="text-gray-500 text-center py-8">
-          No spices found matching your search.
-        </p>
-      </section>
-    );
   }
 
   if (spices.length === 0) {
@@ -50,7 +33,7 @@ export function SpicesSection({
 
   return (
     <ItemList
-      items={filteredSpices}
+      items={spices}
       title="Spices"
       getItemLink={(spice) => `/spices/${spice.id}`}
       renderItem={(spice) => (

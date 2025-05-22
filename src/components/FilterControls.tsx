@@ -1,7 +1,6 @@
 import React from 'react';
 
 interface FilterControlsProps {
-  searchString: string;
   priceRating: number | null;
   heatLevel: number | null;
   onReset: () => void;
@@ -10,14 +9,13 @@ interface FilterControlsProps {
 }
 
 export const FilterControls: React.FC<FilterControlsProps> = ({
-  searchString,
   priceRating,
   heatLevel,
   onReset,
   setPriceRating,
   setHeatLevel,
 }) => {
-  const hasActiveFilters = searchString || priceRating || heatLevel !== null;
+  const hasActiveFilters = priceRating !== null || heatLevel !== null;
 
   const priceOptions = [
     { value: 1, label: '$' },

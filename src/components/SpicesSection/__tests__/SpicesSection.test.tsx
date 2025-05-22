@@ -17,12 +17,7 @@ const renderWithRouter = (component: React.ReactNode) => {
 describe('SpicesSection', () => {
   it('renders loading state when isLoading is true', () => {
     renderWithRouter(
-      <SpicesSection
-        spices={[]}
-        searchString=""
-        isLoading={true}
-        error={null}
-      />,
+      <SpicesSection spices={[]} isLoading={true} error={null} />,
     );
     expect(screen.getByText('Spices')).toBeInTheDocument();
     expect(screen.getByRole('status')).toBeInTheDocument();
@@ -32,7 +27,6 @@ describe('SpicesSection', () => {
     renderWithRouter(
       <SpicesSection
         spices={[]}
-        searchString=""
         isLoading={false}
         error="Failed to load spices"
       />,
@@ -44,40 +38,23 @@ describe('SpicesSection', () => {
 
   it('renders empty state when no spices are available', () => {
     renderWithRouter(
-      <SpicesSection
-        spices={[]}
-        searchString=""
-        isLoading={false}
-        error={null}
-      />,
+      <SpicesSection spices={[]} isLoading={false} error={null} />,
     );
-    expect(
-      screen.getByText('No spices found matching your search.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('No spices available.')).toBeInTheDocument();
   });
 
-  it('renders filtered spices based on search string', () => {
+  it('renders spices correctly', () => {
     renderWithRouter(
-      <SpicesSection
-        spices={mockSpices}
-        searchString="cin"
-        isLoading={false}
-        error={null}
-      />,
+      <SpicesSection spices={mockSpices} isLoading={false} error={null} />,
     );
     expect(screen.getByText('Cinnamon')).toBeInTheDocument();
-    expect(screen.queryByText('Turmeric')).not.toBeInTheDocument();
-    expect(screen.queryByText('Paprika')).not.toBeInTheDocument();
+    expect(screen.getByText('Turmeric')).toBeInTheDocument();
+    expect(screen.getByText('Paprika')).toBeInTheDocument();
   });
 
   it('renders all spices with correct colors and links', () => {
     renderWithRouter(
-      <SpicesSection
-        spices={mockSpices}
-        searchString=""
-        isLoading={false}
-        error={null}
-      />,
+      <SpicesSection spices={mockSpices} isLoading={false} error={null} />,
     );
 
     mockSpices.forEach((spice) => {
@@ -87,19 +64,5 @@ describe('SpicesSection', () => {
       const link = screen.getByLabelText(`View details for ${spice.name}`);
       expect(link).toHaveAttribute('href', `/spices/${spice.id}`);
     });
-  });
-
-  it('renders no results message when search has no matches', () => {
-    renderWithRouter(
-      <SpicesSection
-        spices={mockSpices}
-        searchString="xyz"
-        isLoading={false}
-        error={null}
-      />,
-    );
-    expect(
-      screen.getByText('No spices found matching your search.'),
-    ).toBeInTheDocument();
   });
 });

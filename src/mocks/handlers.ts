@@ -37,13 +37,33 @@ const saveBlends = (newBlends: Blend[]) => {
 };
 
 export const handlers = [
-  http.get('/api/v1/spices', () => {
-    return HttpResponse.json(
-      mockSpices().map((spice) => ({
-        ...spice,
-        price: spice.price || '$', // Ensure all spices have a price
-      })),
-    );
+  http.get('/api/v1/spices', ({ request }) => {
+    const url = new URL(request.url);
+    const search = url.searchParams.get('search');
+    const price = url.searchParams.get('price');
+    const heat = url.searchParams.get('heat');
+
+    let spices = mockSpices().map((spice) => ({
+      ...spice,
+      price: spice.price || '$', // Ensure all spices have a price
+    }));
+
+    // Apply filters
+    if (search) {
+      spices = spices.filter((spice) =>
+        spice.name.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+    if (price) {
+      const priceValue = parseInt(price);
+      spices = spices.filter((spice) => spice.price?.length === priceValue);
+    }
+    if (heat) {
+      const heatValue = parseInt(heat);
+      spices = spices.filter((spice) => spice.heat === heatValue);
+    }
+
+    return HttpResponse.json(spices);
   }),
 
   http.get('/api/v1/spices/:id', ({ params }) => {
@@ -59,8 +79,19 @@ export const handlers = [
     });
   }),
 
-  http.get('/api/v1/blends', () => {
-    return HttpResponse.json(blends);
+  http.get('/api/v1/blends', ({ request }) => {
+    const url = new URL(request.url);
+    const search = url.searchParams.get('search');
+
+    let filteredBlends = [...blends];
+
+    if (search) {
+      filteredBlends = filteredBlends.filter((blend) =>
+        blend.name.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
+    return HttpResponse.json(filteredBlends);
   }),
 
   http.post('/api/v1/blends', async ({ request }) => {

@@ -7,14 +7,12 @@ import { getBlendColors, formatColorsForGradient } from '../../utils/colors';
 
 interface BlendsSectionProps {
   blends: Blend[];
-  searchString: string;
   isLoading: boolean;
   error: string | null;
 }
 
 export function BlendsSection({
   blends,
-  searchString,
   isLoading,
   error,
 }: BlendsSectionProps) {
@@ -28,13 +26,18 @@ export function BlendsSection({
     return <LoadingState title="Blends" />;
   }
 
-  const filteredBlends = blends.filter((blend) =>
-    blend.name.toLowerCase().includes(searchString.toLowerCase()),
-  );
+  if (blends.length === 0) {
+    return (
+      <section className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Blends</h2>
+        <p className="text-gray-500 text-center py-8">No blends available.</p>
+      </section>
+    );
+  }
 
   return (
     <ItemList
-      items={filteredBlends}
+      items={blends}
       title="Blends"
       getItemLink={(blend) => `/blends/${blend.id}`}
       renderItem={(blend) => (

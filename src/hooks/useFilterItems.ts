@@ -1,23 +1,26 @@
 import { useState } from 'react';
 import type { Spice, Blend } from '../types';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../utils/api';
 
 export const useSpiceFilters = () => {
   const [searchString, setSearchString] = useState('');
   const [priceRating, setPriceRating] = useState<number | null>(null);
   const [heatLevel, setHeatLevel] = useState<number | null>(null);
 
-  const filterSpices = (spices: Spice[]) => {
-    return spices.filter((spice) => {
-      const matchesSearch = spice.name
-        .toLowerCase()
-        .includes(searchString.toLowerCase());
-      const matchesPrice =
-        priceRating === null ||
-        (spice.price && spice.price.length === priceRating);
-      const matchesHeat = heatLevel === null || spice.heat === heatLevel;
-      return matchesSearch && matchesPrice && matchesHeat;
-    });
-  };
+  const {
+    data: spices = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['spices', searchString, priceRating, heatLevel],
+    queryFn: () =>
+      api.spices.getAll({
+        search: searchString || undefined,
+        price: priceRating || undefined,
+        heat: heatLevel || undefined,
+      }),
+  });
 
   const resetFilters = () => {
     setSearchString('');
@@ -32,7 +35,9 @@ export const useSpiceFilters = () => {
     setPriceRating,
     heatLevel,
     setHeatLevel,
-    filterSpices,
+    spices,
+    isLoading,
+    error,
     resetFilters,
   };
 };
@@ -40,11 +45,14 @@ export const useSpiceFilters = () => {
 export const useBlendFilters = () => {
   const [searchString, setSearchString] = useState('');
 
-  const filterBlends = (blends: Blend[]) => {
-    return blends.filter((blend) => {
-      return blend.name.toLowerCase().includes(searchString.toLowerCase());
-    });
-  };
+  const {
+    data: blends = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['blends', searchString],
+    queryFn: () => api.blends.getAll({ search: searchString || undefined }),
+  });
 
   const resetFilters = () => {
     setSearchString('');
@@ -53,7 +61,9 @@ export const useBlendFilters = () => {
   return {
     searchString,
     setSearchString,
-    filterBlends,
+    blends,
+    isLoading,
+    error,
     resetFilters,
   };
 };
