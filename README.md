@@ -29,7 +29,7 @@ A modern web application for exploring and managing spice blends. Built with Rea
 1. Clone the repository:
 
 ```bash
-git clone [https://github.com/jeffmendiola/spice-index.git]
+git clone https://github.com/jeffmendiola/spice-index.git
 cd spice-index
 ```
 
