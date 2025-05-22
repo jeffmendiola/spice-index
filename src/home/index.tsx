@@ -6,6 +6,7 @@ import { SearchBar } from '../components/SearchBar';
 import { FilterControls } from '../components/FilterControls';
 import { useSpiceFilters } from '../hooks/useFilterItems';
 import { useBlendFilters } from '../hooks/useFilterItems';
+import { ErrorState } from '../components/ErrorState';
 
 export const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -103,55 +104,53 @@ export const Home = () => {
     setHeatLevel(null);
   };
 
+  const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) {
+      return error.message;
+    }
+    return 'An unknown error occurred';
+  };
+
+  if (spiceError) {
+    return <ErrorState title="Spices" message={getErrorMessage(spiceError)} />;
+  }
+
+  if (blendError) {
+    return <ErrorState title="Blends" message={getErrorMessage(blendError)} />;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-2 sm:px-4 lg:px-6">
-      <div className="max-w-screen-2xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-          <div className="flex items-center gap-4 w-full">
-            <span className="text-lg font-semibold text-gray-800 whitespace-nowrap">
-              Spice Index 🌶️
-            </span>
-            <div className="flex-1 flex justify-center items-center">
-              <SearchBar
-                searchString={spiceSearchString}
-                updateSearchString={(value) => {
-                  setSpiceSearchString(value);
-                  setBlendSearchString(value);
-                }}
-              />
-            </div>
-            <div className="flex gap-2 ml-auto">
-              <Link
-                to="/blends/create"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-[140px] justify-center flex-shrink-0"
-              >
-                Create Blend
-              </Link>
-            </div>
-          </div>
-        </div>
-        {/* Filters and content */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <FilterControls
-            priceRating={priceRating}
-            heatLevel={heatLevel}
-            onReset={handleResetFilters}
-            setPriceRating={setPriceRating}
-            setHeatLevel={setHeatLevel}
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <SearchBar
+            searchString={spiceSearchString}
+            updateSearchString={setSpiceSearchString}
+          />
+          <SearchBar
+            searchString={blendSearchString}
+            updateSearchString={setBlendSearchString}
           />
         </div>
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+        <FilterControls
+          priceRating={priceRating}
+          heatLevel={heatLevel}
+          onReset={handleResetFilters}
+          setPriceRating={setPriceRating}
+          setHeatLevel={setHeatLevel}
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <SpicesSection
             spices={filteredSpices}
             isLoading={isLoadingSpices}
-            error={spiceError?.message || null}
+            error={spiceError ? getErrorMessage(spiceError) : null}
           />
           <BlendsSection
             blends={filteredBlends}
             isLoading={isLoadingBlends}
-            error={blendError?.message || null}
+            error={blendError ? getErrorMessage(blendError) : null}
           />
         </div>
       </div>
