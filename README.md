@@ -71,3 +71,7 @@ src/
 ├── utils/         # Utility functions
 └── mocks/         # Mock data and API handlers
 ```
+
+## Architectural Improvement Plan
+
+I'd propose integrating Server Side Rendering for spice and blend details pages. From a technical perspective, this should improvement page speed performance for the initial render. More importantly from a product perspective, this makes the product discoverable by web crawlers which allows us to take advantage of SEO as a customer acquistion channel. Users searching for spices organically via search engine will be able to find our pages and interact with our application.
