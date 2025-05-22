@@ -73,7 +73,9 @@ describe('CreateBlendForm', () => {
     await waitFor(() => {
       expect(screen.getByText(/name is required/i)).toBeInTheDocument();
       expect(screen.getByText(/description is required/i)).toBeInTheDocument();
-      expect(screen.getByText(/select at least 2 spices/i)).toBeInTheDocument();
+      expect(document.getElementById('spices-error')).toHaveTextContent(
+        /select at least 2 spices or 1 blend/i,
+      );
     });
   });
 

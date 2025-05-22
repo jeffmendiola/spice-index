@@ -47,6 +47,7 @@ const useBlendForm = (onSuccess?: () => void) => {
       name,
       description,
       spices: selectedSpices,
+      blends: selectedBlends,
     });
     setErrors(validationErrors);
 
@@ -226,7 +227,7 @@ export function CreateBlendForm({ onSuccess }: CreateBlendFormProps) {
             </span>
             <span className="sr-only">(required)</span>
             <span className="text-sm text-gray-500 ml-2">
-              (Select at least {VALIDATION.MIN_SPICES})
+              (Select at least 2 spices or 1 blend)
             </span>
           </legend>
           <div
