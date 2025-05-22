@@ -82,21 +82,13 @@ function Home() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-2 sm:px-4 lg:px-6">
       <div className="max-w-screen-2xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">Spice Index</h1>
-          <div className="flex gap-4">
-            <Link
-              to="/blends/create"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Create Blend
-            </Link>
-          </div>
-        </div>
-        <div className="flex flex-col md:flex-row md:items-start gap-10">
-          {/* Sidebar Filters */}
-          <aside className="w-full md:w-96 flex-shrink-0 mb-8 md:mb-0">
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-0">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+          <div className="flex items-center gap-4 w-full">
+            <span className="text-lg font-semibold text-gray-800 whitespace-nowrap">
+              Spice Index 🌶️
+            </span>
+            <div className="flex-1 flex justify-center items-center">
               <SearchBar
                 searchString={spiceSearchString}
                 updateSearchString={(value) => {
@@ -104,33 +96,42 @@ function Home() {
                   setBlendSearchString(value);
                 }}
               />
-              <FilterControls
-                searchString={spiceSearchString}
-                priceRating={priceRating}
-                heatLevel={heatLevel}
-                onReset={handleResetFilters}
-                setPriceRating={setPriceRating}
-                setHeatLevel={setHeatLevel}
-              />
             </div>
-          </aside>
-          {/* Main Content */}
-          <main className="flex-1">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <SpicesSection
-                spices={filteredSpices}
-                searchString={spiceSearchString}
-                isLoading={isLoadingSpices}
-                error={spicesError?.message || null}
-              />
-              <BlendsSection
-                blends={filteredBlends}
-                searchString={blendSearchString}
-                isLoading={isLoadingBlends}
-                error={blendsError?.message || null}
-              />
+            <div className="flex gap-2 ml-auto">
+              <Link
+                to="/blends/create"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-[140px] justify-center flex-shrink-0"
+              >
+                Create Blend
+              </Link>
             </div>
-          </main>
+          </div>
+        </div>
+        {/* Filters and content */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <FilterControls
+            searchString={spiceSearchString}
+            priceRating={priceRating}
+            heatLevel={heatLevel}
+            onReset={handleResetFilters}
+            setPriceRating={setPriceRating}
+            setHeatLevel={setHeatLevel}
+          />
+        </div>
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <SpicesSection
+            spices={filteredSpices}
+            searchString={spiceSearchString}
+            isLoading={isLoadingSpices}
+            error={spicesError?.message || null}
+          />
+          <BlendsSection
+            blends={filteredBlends}
+            searchString={blendSearchString}
+            isLoading={isLoadingBlends}
+            error={blendsError?.message || null}
+          />
         </div>
       </div>
     </div>

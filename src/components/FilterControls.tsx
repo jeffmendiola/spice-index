@@ -38,46 +38,43 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-row gap-4 md:flex-col w-full">
-        {/* Spice Price Radio Group */}
-        <div className="flex flex-col gap-2 items-start w-1/2">
+      <div className="flex flex-row gap-6 items-start w-full flex-wrap">
+        {/* Spice Price Pills */}
+        <div className="flex flex-col gap-2 items-start">
           <span className="text-sm font-bold text-gray-800 mb-1">
             Spice Price
           </span>
-          <div className="flex flex-col gap-1 w-full">
+          <div className="flex flex-row flex-wrap gap-2 w-full">
             {priceOptions.map((option) => (
-              <label
+              <button
                 key={option.value}
-                className="flex items-center gap-2 cursor-pointer select-none"
-              >
-                <input
-                  type="radio"
-                  name="spice-price"
-                  value={option.value}
-                  checked={priceRating === option.value}
-                  onChange={() => setPriceRating(option.value)}
-                  className="accent-indigo-600 w-4 h-4"
-                />
-                <span
-                  className={
+                type="button"
+                onClick={() =>
+                  setPriceRating(
+                    priceRating === option.value ? null : option.value,
+                  )
+                }
+                className={`px-4 py-1 rounded-full border text-base font-medium transition-colors whitespace-nowrap
+                  ${
                     priceRating === option.value
-                      ? 'font-bold text-gray-900'
-                      : 'font-normal text-gray-700'
+                      ? 'bg-indigo-100 text-indigo-700 border-indigo-400'
+                      : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
                   }
-                >
-                  {option.label}
-                </span>
-              </label>
+                `}
+                aria-pressed={priceRating === option.value}
+              >
+                {option.label}
+              </button>
             ))}
           </div>
         </div>
 
         {/* Spice Heat Level Pills */}
-        <div className="flex flex-col gap-2 items-start w-1/2">
+        <div className="flex flex-col gap-2 items-start">
           <span className="text-sm font-bold text-gray-800 mb-1">
             Spice Heat Level
           </span>
-          <div className="flex flex-wrap gap-2 w-full">
+          <div className="flex flex-row flex-wrap gap-2 w-full">
             {heatOptions.map((option) => (
               <button
                 key={option.value}

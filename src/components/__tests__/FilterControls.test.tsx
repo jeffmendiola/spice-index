@@ -18,13 +18,13 @@ describe('FilterControls', () => {
     setHeatLevel: vi.fn(),
   };
 
-  it('renders price rating radio group and heat level pills', () => {
+  it('renders price rating pills and heat level pills', () => {
     render(<FilterControls {...defaultProps} />);
     expect(screen.getByText('Spice Price')).toBeInTheDocument();
     expect(screen.getByText('Spice Heat Level')).toBeInTheDocument();
-    // Price radios
-    expect(screen.getByLabelText('$')).toBeInTheDocument();
-    expect(screen.getByLabelText('$$')).toBeInTheDocument();
+    // Price pills
+    expect(screen.getByRole('button', { name: '$' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '$$' })).toBeInTheDocument();
     // Heat pills
     expect(getHeatPillButton(0)).toBeInTheDocument();
     expect(getHeatPillButton(1)).toBeInTheDocument();
@@ -48,10 +48,10 @@ describe('FilterControls', () => {
     expect(screen.queryByText('Reset Filters')).not.toBeInTheDocument();
   });
 
-  it('calls setPriceRating when price rating changes', () => {
+  it('calls setPriceRating when a price pill is clicked', () => {
     render(<FilterControls {...defaultProps} />);
-    const priceRadio = screen.getByLabelText('$');
-    fireEvent.click(priceRadio);
+    const pricePill = screen.getByRole('button', { name: '$' });
+    fireEvent.click(pricePill);
     expect(defaultProps.setPriceRating).toHaveBeenCalledWith(1);
   });
 
@@ -94,9 +94,17 @@ describe('FilterControls', () => {
 
   it('displays correct initial values', () => {
     render(<FilterControls {...defaultProps} priceRating={2} heatLevel={4} />);
-    const priceRadio = screen.getByLabelText('$$');
-    expect(priceRadio).toBeChecked();
+    const pricePill = screen.getByRole('button', { name: '$$' });
+    expect(pricePill).toHaveAttribute('aria-pressed', 'true');
     const heatPill = getHeatPillButton(4);
+    expect(heatPill).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('shows selected state for price and heat pills', () => {
+    render(<FilterControls {...defaultProps} priceRating={2} heatLevel={3} />);
+    const pricePill = screen.getByRole('button', { name: '$$' });
+    const heatPill = getHeatPillButton(3);
+    expect(pricePill).toHaveAttribute('aria-pressed', 'true');
     expect(heatPill).toHaveAttribute('aria-pressed', 'true');
   });
 });

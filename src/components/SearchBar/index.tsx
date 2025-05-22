@@ -20,7 +20,7 @@ export function SearchBar({
     <div
       role="search"
       aria-label="Search spices and blends"
-      className="mb-8 flex justify-center max-w-[320px]"
+      className="flex justify-center max-w-[320px] w-full"
     >
       <div className="relative w-full max-w-md">
         <input
