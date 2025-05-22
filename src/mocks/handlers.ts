@@ -1,26 +1,42 @@
 import { http, HttpResponse } from 'msw';
 import { data as mockSpices } from './data/spices';
-import { store } from './data/store';
+import { data as defaultBlends } from './data/blends';
 import type { Blend, BlendWithSpices, Spice } from '../types';
 
-// Helper to recursively get all spices from a blend and its child blends
+// Helper function to get all spices in a blend (including nested blends)
 const getAllSpices = (blend: Blend, allBlends: Blend[]): Spice[] => {
-  const directSpices = blend.spices
-    .map((spiceId) => mockSpices().find((s) => s.id === spiceId))
-    .filter((spice): spice is Spice => spice !== undefined);
+  const spiceIds = new Set<number>(blend.spices);
 
-  const childBlendSpices = blend.blends.flatMap((blendId) => {
+  blend.blends.forEach((blendId) => {
     const childBlend = allBlends.find((b) => b.id === blendId);
-    return childBlend ? getAllSpices(childBlend, allBlends) : [];
+    if (childBlend) {
+      getAllSpices(childBlend, allBlends).forEach((spice) =>
+        spiceIds.add(spice.id),
+      );
+    }
   });
 
-  return [...new Set([...directSpices, ...childBlendSpices])];
+  return mockSpices()
+    .filter((spice) => spiceIds.has(spice.id))
+    .map((spice) => ({
+      ...spice,
+      price: spice.price || '$', // Ensure all spices have a price
+    }));
 };
+
+// In-memory storage for blends
+let blends = [...defaultBlends()];
 
 export const handlers = [
   http.get('/api/v1/spices', () => {
-    return HttpResponse.json(mockSpices());
+    return HttpResponse.json(
+      mockSpices().map((spice) => ({
+        ...spice,
+        price: spice.price || '$', // Ensure all spices have a price
+      })),
+    );
   }),
+
   http.get('/api/v1/spices/:id', ({ params }) => {
     const spice = mockSpices().find((spice) => spice.id === Number(params.id));
 
@@ -28,20 +44,28 @@ export const handlers = [
       return new HttpResponse('Not found', { status: 404 });
     }
 
-    return HttpResponse.json(spice);
+    return HttpResponse.json({
+      ...spice,
+      price: spice.price || '$', // Ensure all spices have a price
+    });
   }),
+
   http.get('/api/v1/blends', () => {
-    return HttpResponse.json(store.getBlends());
+    return HttpResponse.json(blends);
   }),
+
   http.post('/api/v1/blends', async ({ request }) => {
     const newBlend = (await request.json()) as Omit<Blend, 'id'>;
-    const createdBlend = store.addBlend(newBlend);
+    const createdBlend = {
+      ...newBlend,
+      id: Math.max(...blends.map((b) => b.id)) + 1,
+    };
+    blends = [...blends, createdBlend];
     return HttpResponse.json(createdBlend);
   }),
+
   http.get('/api/v1/blends/:id', ({ params, request }) => {
-    const blend = store
-      .getBlends()
-      .find((blend) => blend.id === Number(params.id));
+    const blend = blends.find((blend) => blend.id === Number(params.id));
 
     if (!blend) {
       return new HttpResponse('Not found', { status: 404 });
@@ -51,10 +75,9 @@ export const handlers = [
     const include = url.searchParams.get('include');
 
     if (include?.includes('spices')) {
-      const allBlends = store.getBlends();
       const enhancedBlend: BlendWithSpices = {
         ...blend,
-        allSpices: getAllSpices(blend, allBlends),
+        allSpices: getAllSpices(blend, blends),
       };
 
       return HttpResponse.json(enhancedBlend);
@@ -62,8 +85,9 @@ export const handlers = [
 
     return HttpResponse.json(blend);
   }),
+
   http.post('/api/v1/blends/reset', () => {
-    store.resetBlends();
+    blends = [...defaultBlends()];
     return new HttpResponse(null, { status: 200 });
   }),
 ];
