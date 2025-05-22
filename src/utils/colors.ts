@@ -2,7 +2,7 @@ import type { Blend, Spice } from '../types';
 
 /**
  * Gets the colors of all spices in a blend, including those from nested blends.
- * If no colors are found, returns a default gray color.
+ * If no colors are found, returns a default indigo color.
  */
 export const getBlendColors = (
   blend: Blend,
@@ -31,7 +31,7 @@ export const getBlendColors = (
 
   if (blendColors.length > 0) return blendColors;
 
-  return ['gray'];
+  return ['7e7ac0']; // Default indigo color
 };
 
 /**

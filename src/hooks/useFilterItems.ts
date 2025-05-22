@@ -3,7 +3,7 @@ import type { Spice, Blend } from '../types';
 
 export const useSpiceFilters = () => {
   const [searchString, setSearchString] = useState('');
-  const [priceRating, setPriceRating] = useState<string | null>(null);
+  const [priceRating, setPriceRating] = useState<number | null>(null);
   const [heatLevel, setHeatLevel] = useState<number | null>(null);
 
   const filterSpices = (spices: Spice[]) => {
@@ -11,7 +11,9 @@ export const useSpiceFilters = () => {
       const matchesSearch = spice.name
         .toLowerCase()
         .includes(searchString.toLowerCase());
-      const matchesPrice = priceRating === null || spice.price === priceRating;
+      const matchesPrice =
+        priceRating === null ||
+        (spice.price && spice.price.length === priceRating);
       const matchesHeat = heatLevel === null || spice.heat === heatLevel;
       return matchesSearch && matchesPrice && matchesHeat;
     });

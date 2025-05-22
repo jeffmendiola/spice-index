@@ -36,7 +36,7 @@ describe('FilterControls', () => {
       <FilterControls
         {...defaultProps}
         searchString="test"
-        priceRating="$"
+        priceRating={1}
         heatLevel={2}
       />,
     );
@@ -52,7 +52,7 @@ describe('FilterControls', () => {
     render(<FilterControls {...defaultProps} />);
     const priceRadio = screen.getByLabelText('$');
     fireEvent.click(priceRadio);
-    expect(defaultProps.setPriceRating).toHaveBeenCalledWith('$');
+    expect(defaultProps.setPriceRating).toHaveBeenCalledWith(1);
   });
 
   it('calls setHeatLevel when a heat pill is clicked', () => {
@@ -83,7 +83,7 @@ describe('FilterControls', () => {
       <FilterControls
         {...defaultProps}
         searchString="test"
-        priceRating="$"
+        priceRating={1}
         heatLevel={2}
       />,
     );
@@ -93,7 +93,7 @@ describe('FilterControls', () => {
   });
 
   it('displays correct initial values', () => {
-    render(<FilterControls {...defaultProps} priceRating="$$" heatLevel={4} />);
+    render(<FilterControls {...defaultProps} priceRating={2} heatLevel={4} />);
     const priceRadio = screen.getByLabelText('$$');
     expect(priceRadio).toBeChecked();
     const heatPill = getHeatPillButton(4);

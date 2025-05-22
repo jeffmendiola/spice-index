@@ -33,7 +33,9 @@ function Home() {
   useEffect(() => {
     setSpiceSearchString(searchParams.get('search') || '');
     setBlendSearchString(searchParams.get('search') || '');
-    setPriceRating(searchParams.get('price') || null);
+    setPriceRating(
+      searchParams.get('price') ? parseInt(searchParams.get('price')!) : null,
+    );
     setHeatLevel(
       searchParams.get('heat') ? parseInt(searchParams.get('heat')!) : null,
     );
@@ -42,7 +44,7 @@ function Home() {
   const updateUrlParams = () => {
     const params = new URLSearchParams();
     if (spiceSearchString) params.set('search', spiceSearchString);
-    if (priceRating) params.set('price', priceRating);
+    if (priceRating !== null) params.set('price', priceRating.toString());
     if (heatLevel !== null) params.set('heat', heatLevel.toString());
     setSearchParams(params);
   };

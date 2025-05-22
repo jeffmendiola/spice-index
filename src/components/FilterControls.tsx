@@ -2,10 +2,10 @@ import React from 'react';
 
 interface FilterControlsProps {
   searchString: string;
-  priceRating: string | null;
+  priceRating: number | null;
   heatLevel: number | null;
   onReset: () => void;
-  setPriceRating: (value: string | null) => void;
+  setPriceRating: (value: number | null) => void;
   setHeatLevel: (value: number | null) => void;
 }
 
@@ -20,11 +20,11 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
   const hasActiveFilters = searchString || priceRating || heatLevel !== null;
 
   const priceOptions = [
-    { value: '$', label: '$' },
-    { value: '$$', label: '$$' },
-    { value: '$$$', label: '$$$' },
-    { value: '$$$$', label: '$$$$' },
-    { value: '$$$$$', label: '$$$$$' },
+    { value: 1, label: '$' },
+    { value: 2, label: '$$' },
+    { value: 3, label: '$$$' },
+    { value: 4, label: '$$$$' },
+    { value: 5, label: '$$$$$' },
   ];
 
   const heatOptions = [
