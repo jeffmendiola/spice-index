@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { SearchBar } from '../components/SearchBar';
@@ -6,22 +6,42 @@ import { SpicesSection } from '../components/SpicesSection';
 import { BlendsSection } from '../components/BlendsSection';
 import { FilterControls } from '../components/FilterControls';
 import { api } from '../utils/api';
+import { useSpiceFilters, useBlendFilters } from '../hooks/useFilterItems';
 
 function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchString, updateSearchString] = useState(
-    searchParams.get('search') || '',
-  );
-  const [priceRating, setPriceRating] = useState<string | null>(
-    searchParams.get('price') || null,
-  );
-  const [heatLevel, setHeatLevel] = useState<number | null>(
-    searchParams.get('heat') ? parseInt(searchParams.get('heat')!) : null,
-  );
+
+  const {
+    searchString: spiceSearchString,
+    setSearchString: setSpiceSearchString,
+    priceRating,
+    setPriceRating,
+    heatLevel,
+    setHeatLevel,
+    filterSpices,
+    resetFilters: resetSpiceFilters,
+  } = useSpiceFilters();
+
+  const {
+    searchString: blendSearchString,
+    setSearchString: setBlendSearchString,
+    filterBlends,
+    resetFilters: resetBlendFilters,
+  } = useBlendFilters();
+
+  // Initialize state from URL params
+  useEffect(() => {
+    setSpiceSearchString(searchParams.get('search') || '');
+    setBlendSearchString(searchParams.get('search') || '');
+    setPriceRating(searchParams.get('price') || null);
+    setHeatLevel(
+      searchParams.get('heat') ? parseInt(searchParams.get('heat')!) : null,
+    );
+  }, []);
 
   const updateUrlParams = () => {
     const params = new URLSearchParams();
-    if (searchString) params.set('search', searchString);
+    if (spiceSearchString) params.set('search', spiceSearchString);
     if (priceRating) params.set('price', priceRating);
     if (heatLevel !== null) params.set('heat', heatLevel.toString());
     setSearchParams(params);
@@ -30,7 +50,7 @@ function Home() {
   // Update URL when filters change
   useEffect(() => {
     updateUrlParams();
-  }, [searchString, priceRating, heatLevel, setSearchParams]);
+  }, [spiceSearchString, priceRating, heatLevel, setSearchParams]);
 
   const {
     data: spices = [],
@@ -49,31 +69,12 @@ function Home() {
     queryFn: api.blends.getAll,
   });
 
-  const filterItems = <T extends { name: string }>(
-    items: T[],
-    searchString: string,
-    additionalFilters?: (item: T) => boolean,
-  ) => {
-    return items.filter((item) => {
-      const matchesSearch = item.name
-        .toLowerCase()
-        .includes(searchString.toLowerCase());
-      return matchesSearch && (!additionalFilters || additionalFilters(item));
-    });
-  };
-
-  const filteredSpices = filterItems(spices, searchString, (spice) => {
-    const matchesPrice = priceRating === null || spice.price === priceRating;
-    const matchesHeat = heatLevel === null || spice.heat === heatLevel;
-    return matchesPrice && matchesHeat;
-  });
-
-  const filteredBlends = filterItems(blends, searchString);
+  const filteredSpices = filterSpices(spices);
+  const filteredBlends = filterBlends(blends);
 
   const handleResetFilters = () => {
-    updateSearchString('');
-    setPriceRating(null);
-    setHeatLevel(null);
+    resetSpiceFilters();
+    resetBlendFilters();
   };
 
   return (
@@ -92,11 +93,11 @@ function Home() {
         </div>
         <div className="mb-8 space-y-4">
           <SearchBar
-            searchString={searchString}
-            updateSearchString={updateSearchString}
+            searchString={spiceSearchString}
+            updateSearchString={setSpiceSearchString}
           />
           <FilterControls
-            searchString={searchString}
+            searchString={spiceSearchString}
             priceRating={priceRating}
             heatLevel={heatLevel}
             onReset={handleResetFilters}
@@ -107,13 +108,13 @@ function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <SpicesSection
             spices={filteredSpices}
-            searchString={searchString}
+            searchString={spiceSearchString}
             isLoading={isLoadingSpices}
             error={spicesError?.message || null}
           />
           <BlendsSection
             blends={filteredBlends}
-            searchString={searchString}
+            searchString={blendSearchString}
             isLoading={isLoadingBlends}
             error={blendsError?.message || null}
           />
