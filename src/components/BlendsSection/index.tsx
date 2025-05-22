@@ -68,6 +68,7 @@ export function BlendsSection({
         <div className="flex items-center">
           <div
             className="w-4 h-4 rounded mr-2 border border-gray-200 overflow-hidden"
+            data-testid="blend-color"
             style={{
               background: `linear-gradient(to right, ${calculateBlendColors(
                 blend,
