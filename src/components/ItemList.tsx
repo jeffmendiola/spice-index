@@ -36,7 +36,7 @@ export function ItemList<T extends Item>({
         </div>
       ) : (
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 p-1"
           role="list"
           aria-label={`List of ${title.toLowerCase()}`}
         >
