@@ -38,7 +38,6 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Filters side by side on mobile/tablet, stacked on desktop */}
       <div className="flex flex-row gap-4 md:flex-col w-full">
         {/* Spice Price Radio Group */}
         <div className="flex flex-col gap-2 items-start w-1/2">

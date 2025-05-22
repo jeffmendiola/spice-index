@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { BlendsSection } from '../index';
 
-// Mock the spices data
 vi.mock('../../../mocks/data/spices', () => ({
   data: () => [
     { id: 1, name: 'Cumin', color: 'FFA500', price: '$', heat: 2 },

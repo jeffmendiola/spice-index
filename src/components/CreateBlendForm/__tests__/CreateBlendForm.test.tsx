@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CreateBlendForm } from '../index';
 import { api } from '../../../utils/api';
 
-// Mock the API
 vi.mock('../../../utils/api', () => ({
   api: {
     spices: {
