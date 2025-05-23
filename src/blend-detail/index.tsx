@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useBlend } from '../hooks/useBlend';
 import { useBlends } from '../hooks/useBlend';
-import type { BlendWithSpices, Blend } from '../types';
+import type { BlendWithSpices } from '../types';
 import { useState } from 'react';
 import { getBlendColors, formatColorsForGradient } from '../utils/colors';
 
